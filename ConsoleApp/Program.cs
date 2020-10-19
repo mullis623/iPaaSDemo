@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Azure.Storage;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -10,8 +13,11 @@ using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using ConsoleApp.Models;
+using PredictionDetails;
 
-namespace ConsoleAp
+
+namespace ConsoleApp
 {
     public static class Program
     {
@@ -50,11 +56,13 @@ namespace ConsoleAp
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                 response = await client.PostAsync(url, content);
 
-                Program.Root root = new Program.Root();
+                string responseBody = await response.Content.ReadAsStringAsync();
 
-                await ProcessCustomVisionResults(response, root);
- 
-                Console.WriteLine(await response.Content.ReadAsStringAsync());                     
+                ProcessCustomVisionResults(responseBody, imageFilePath);
+
+                Console.WriteLine(responseBody);
+
+                
             }
         }
 
@@ -66,32 +74,82 @@ namespace ConsoleAp
         }
 
 
-        public static async Task ProcessCustomVisionResults(HttpResponseMessage response, Root root)
+        public static async void ProcessCustomVisionResults(String responseBody, String imagePath)
         {
-           root = JsonConvert.DeserializeObject <Root> (await response.Content.ReadAsStringAsync());
+           Program.Root root = new Program.Root();
 
-            root.imageValid = false;
+           root = JsonConvert.DeserializeObject<Root>(responseBody);
+
+           root.imageValid = false;
             
            foreach (var item in root.predictions)
             {
+                //if ((item.tagName == "issues") && (item.probability > .75))
                 if ((item.tagName == "issues") && (item.probability > .75))
                 {
                     root.imageValid = true;
+                    Prediction ValidPrediction = new Prediction
+                    {
+                        probability = item.probability,
+                        tagId = item.tagId,
+                        tagName = item.tagName
+                    };
+
+                    Console.WriteLine("Issue successfully identified with probablility: " + ValidPrediction.probability);
                     break;
                 }
             }
 
-           //if root.imageValid = true, then write this to the images container which will trigger the Logic App. 
+            AzureStorageConfig strgConfig = new AzureStorageConfig
+            {
+                AccountName = "blobuploadedimages",
+                ImageContainer = "processedimages",
+                ThumbnailContainer = "images",
+                AccountKey = "87nnRatUOR3SxwOHKsrU4B2c2MF6uIQZE7S1kUgArHIGDNzViLSbuWwWPdk9jlJBSSklJRxxe7N9PEdhbxP3bQ=="
+            };
+
+            string fileName = Path.GetFileName(imagePath);
+            //Console.WriteLine("FileName: " + fileName);
+            FileStream imageStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+            await UploadFileToStorage(imageStream, fileName, strgConfig);
+
+            //if root.imageValid = true, then write this to the images container which will trigger the Logic App. 
+        }
+
+        public static async Task<bool> UploadFileToStorage(Stream fileStream, string fileName,
+                                                    AzureStorageConfig _storageConfig)
+        {
+            // Create a URI to the blob
+            Uri blobUri = new Uri("https://" +
+                                  _storageConfig.AccountName +
+                                  ".blob.core.windows.net/" +
+                                  _storageConfig.ImageContainer +
+                                  "/" + fileName);
+
+            Console.WriteLine("UploadURL: " + blobUri);
+
+            // Create StorageSharedKeyCredentials object by reading
+            // the values from the configuration (appsettings.json)
+            StorageSharedKeyCredential storageCredentials =
+                new StorageSharedKeyCredential(_storageConfig.AccountName, _storageConfig.AccountKey);
+
+            // Create the blob client.
+            BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
+
+            // Upload the file
+            await blobClient.UploadAsync(fileStream);
+
+            return await Task.FromResult(true);
         }
 
         // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
-        public class Prediction
-        {
+        /*public class Prediction
+        /{
             public double probability { get; set; }
             public string tagId { get; set; }
             public string tagName { get; set; }
 
-        }
+        }*/
         public class Root
         {
             public string id { get; set; }
