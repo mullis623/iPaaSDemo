@@ -183,6 +183,7 @@ namespace iPaaSDemoProj
                 //if ((item.tagName == "issues") && (item.probability > .75))
                 if ((item.tagName == "issues") && (item.probability > .75))
                 {
+                    metadata.id = root.id;
                     metadata.probability = item.probability;
                     metadata.tagName = item.tagName;
                     metadata.isValidatedIssue = true;
@@ -199,6 +200,7 @@ namespace iPaaSDemoProj
                 {    
                     if(item.probability > .75)
                     {
+                        metadata.id = root.id;
                         metadata.probability = item.probability;
                         metadata.tagName = item.tagName;
 
