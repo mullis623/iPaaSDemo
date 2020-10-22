@@ -4,7 +4,9 @@
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
         "NewImageSourceStorage": "UseDevelopmentStorage=true",
         "ValidImageDestStorage": "UseDevelopmentStorage=true",
+        "ArchiveImageDestContainer": "imagearchive",
         "ValidImageDestContainer": "processedimages",
+        "ImageMetadataContainer": "imagemetadata",
         "FUNCTIONS_WORKER_RUNTIME": "dotnet"
     }
 }

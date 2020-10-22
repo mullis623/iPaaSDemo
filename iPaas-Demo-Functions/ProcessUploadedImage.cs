@@ -10,7 +10,9 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using PredictionDetails;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ImageDetails;
 
 namespace iPaaSDemoProj
 {
@@ -24,12 +26,47 @@ namespace iPaaSDemoProj
             // Download Image File from Blob Storage
             try
             {
+                ImageMetadata imageData = new ImageMetadata();
+
+                
+                    string sourceStorage = Environment.GetEnvironmentVariable("NewImageSourceStorage");
+
+                    CloudStorageAccount sourceStorageAccount = CloudStorageAccount.Parse(sourceStorage);
+                    
+                    string metaContainerName = Environment.GetEnvironmentVariable("ImageMetadataContainer");
+                    CloudBlobClient metaBlobClient = sourceStorageAccount.CreateCloudBlobClient();
+                    CloudBlobContainer metaContainer = metaBlobClient.GetContainerReference(metaContainerName);
+
+                    //string metaname = name.Split('.').First() + ".json";
+                    string metaname = Path.GetFileNameWithoutExtension(name) + ".json";
+                    string ext = Path.GetExtension(name);
+
+                    CloudBlockBlob metaBlob = metaContainer.GetBlockBlobReference(metaname);
+
+                    string curi = metaBlob.StorageUri.ToString();
+                    log.LogInformation("Container URI: " + curi);
+
+                    string jsonMetaData = await metaBlob.DownloadTextAsync();
+
+                    imageData = JsonConvert.DeserializeObject<ImageMetadata>(jsonMetaData);
+
+                    //metaBlob.Download()
+
+                    //imageData = await System.Text.Json.JsonSerializer.DeserializeAsync<ImageMetadata>(blobMetaMemStream);
+
+                    log.LogInformation("Image Metadata issueType: " + imageData.issueType + " issueDescription: " + imageData.issueDescription);
+                    
+
+
                 using(MemoryStream blobMemStream = new MemoryStream())
                 {
 
                     await myBlob.DownloadToStreamAsync(blobMemStream);
 
-                    bool validImage = false;
+                    string destinationStorage = Environment.GetEnvironmentVariable("ValidImageDestStorage");
+
+                    CloudStorageAccount destStorageAccount = CloudStorageAccount.Parse(destinationStorage);
+                    CloudBlobClient destBlobClient = destStorageAccount.CreateCloudBlobClient();
 
                     byte[] byteData =blobMemStream.ToArray();
                     
@@ -57,28 +94,26 @@ namespace iPaaSDemoProj
 
                         string responseBody = await response.Content.ReadAsStringAsync();
 
-                        validImage = ProcessCustomVisionResults(responseBody);
+                        imageData = ProcessCustomVisionResults(responseBody, imageData);
 
                         Console.WriteLine(responseBody);
                         
                     }
 
-                    if(validImage)
+                    if(imageData.isValidatedIssue)
                     {
-                        log.LogInformation("Uploaded Image is an Issue and is now being uploaded for further processing...");
-                        string destinationStorage = Environment.GetEnvironmentVariable("ValidImageDestStorage");
-                        string destinationContainer = Environment.GetEnvironmentVariable("ValidImageDestContainer");
 
-                        CloudStorageAccount destStorageAccount = CloudStorageAccount.Parse(destinationStorage);
-                        CloudBlobClient destBlobClient = destStorageAccount.CreateCloudBlobClient();
+                        log.LogInformation("Uploaded Image is an Issue and is now being uploaded for further processing...");
+                        
+                        string destinationContainer = Environment.GetEnvironmentVariable("ValidImageDestContainer");
                         CloudBlobContainer destContainer = destBlobClient.GetContainerReference(destinationContainer);
 
                         await destContainer.CreateIfNotExistsAsync();
 
                         //string uri = destStorageAccount.BlobStorageUri.ToString();
                         //log.LogInformation("Storage URI: " + uri);
-
-                        CloudBlockBlob image = destContainer.GetBlockBlobReference(name);
+                 
+                        CloudBlockBlob image = destContainer.GetBlockBlobReference(imageData.id + ext);
 
                         //string curi = image.StorageUri.ToString();
                         //log.LogInformation("Container URI: " + curi);
@@ -89,31 +124,45 @@ namespace iPaaSDemoProj
                         //await image.UploadFromByteArrayAsync(byteData,0,byteData.Length);
                         blobMemStream.Position = 0;
                         await image.UploadFromStreamAsync(blobMemStream);
+                    }
+                    else if(imageData.probability > .75)
+                    {
+                        log.LogInformation("Uploaded Image is not an Issue, but was successfully identified as: " + imageData.tagName + ". Archiving for future reference....");
 
+                        string destinationContainer = Environment.GetEnvironmentVariable("ArchiveImageDestContainer");
+                        CloudBlobContainer destContainer = destBlobClient.GetContainerReference(destinationContainer);
+
+                        await destContainer.CreateIfNotExistsAsync();
+
+                        CloudBlockBlob image = destContainer.GetBlockBlobReference(imageData.id + ext);
+
+                        blobMemStream.Position = 0;
+                        await image.UploadFromStreamAsync(blobMemStream);
                     }
                     else
                     {
+                        log.LogInformation("Uploaded Image is not an Issue and not identified successfully. Archiving for future reference....");
 
-                        log.LogInformation("Uploaded Image is not an Issue");
+                        string destinationContainer = Environment.GetEnvironmentVariable("ArchiveImageDestContainer");
+                        CloudBlobContainer destContainer = destBlobClient.GetContainerReference(destinationContainer);
+
+                        await destContainer.CreateIfNotExistsAsync();
+
+                        CloudBlockBlob image = destContainer.GetBlockBlobReference(imageData.id + ext);
+
+                        blobMemStream.Position = 0;
+                        await image.UploadFromStreamAsync(blobMemStream);
 
                     }
 
-                    /*using(ZipArchive archive = new ZipArchive(blobMemStream))
-                    {
-                        foreach (ZipArchiveEntry entry in archive.Entries)
-                        {
-                            log.LogInformation($"Now processing {entry.FullName}");
+                    string newMetaJson = System.Text.Json.JsonSerializer.Serialize<ImageMetadata>(imageData);
+                    CloudBlockBlob newMetaBlob = metaContainer.GetBlockBlobReference(imageData.id + ".json");
+                    await newMetaBlob.UploadTextAsync(newMetaJson);
 
-                            //Replace all NO digits, letters, or "-" by a "-" Azure storage is specific on valid characters
-                            string valideName = Regex.Replace(entry.Name,@"[^a-zA-Z0-9\-]","-").ToLower();
+                    log.LogInformation("Removing Image from Upload Container");
+                    await myBlob.DeleteIfExistsAsync();
+                    await metaBlob.DeleteIfExistsAsync();
 
-                            CloudBlockBlob blockBlob = container.GetBlockBlobReference(valideName);
-                            using (var fileStream = entry.Open())
-                            {
-                                await blockBlob.UploadFromStreamAsync(fileStream);
-                            }
-                        }
-                    }*/
                 }
             }
             catch(Exception ex){
@@ -123,33 +172,44 @@ namespace iPaaSDemoProj
 
         }
 
-        public static bool ProcessCustomVisionResults(String responseBody)
+        public static ImageMetadata ProcessCustomVisionResults(String responseBody, ImageMetadata metadata)
         {
            ProcessUploadedImage.Root root = new ProcessUploadedImage.Root();
 
            root = JsonConvert.DeserializeObject<Root>(responseBody);
-
-           root.imageValid = false;
             
            foreach (var item in root.predictions)
-            {
+           {
                 //if ((item.tagName == "issues") && (item.probability > .75))
                 if ((item.tagName == "issues") && (item.probability > .75))
                 {
-                    root.imageValid = true;
-                    Prediction ValidPrediction = new Prediction
-                    {
-                        probability = item.probability,
-                        tagId = item.tagId,
-                        tagName = item.tagName
-                    };
+                    metadata.probability = item.probability;
+                    metadata.tagName = item.tagName;
+                    metadata.isValidatedIssue = true;
 
-                    Console.WriteLine("Issue successfully identified with probablility: " + ValidPrediction.probability);
+                    Console.WriteLine("Issue successfully identified with probablility: " + metadata.probability);
                     break;
+                }
+                
+            }
+
+            if(!(metadata.isValidatedIssue))
+            {
+                foreach (var item in root.predictions)
+                {    
+                    if(item.probability > .75)
+                    {
+                        metadata.probability = item.probability;
+                        metadata.tagName = item.tagName;
+
+                        Console.WriteLine("Item successfully identified as: " + metadata.tagName + " with probablility: " + metadata.probability);
+                        break;
+                    }
+                    
                 }
             }
 
-            return root.imageValid;
+            return metadata;
 
         }
 
@@ -159,8 +219,8 @@ namespace iPaaSDemoProj
             public string project { get; set; }
             public string iteration { get; set; }
             public DateTime created { get; set; }
-            public List<Prediction> predictions { get; set; }
-            public bool imageValid { get; set; }
+            public List<ImageMetadata> predictions { get; set; }
+            public bool isIssue { get; set; }
         }
 
     }
