@@ -28,37 +28,40 @@ namespace iPaaSDemoProj
             {
                 ImageMetadata imageData = new ImageMetadata();
 
+                string sourceStorage = Environment.GetEnvironmentVariable("NewImageSourceStorage");
+
+                CloudStorageAccount sourceStorageAccount = CloudStorageAccount.Parse(sourceStorage);
                 
-                    string sourceStorage = Environment.GetEnvironmentVariable("NewImageSourceStorage");
+                string metaContainerName = Environment.GetEnvironmentVariable("ImageMetadataContainer");
+                CloudBlobClient metaBlobClient = sourceStorageAccount.CreateCloudBlobClient();
+                CloudBlobContainer metaContainer = metaBlobClient.GetContainerReference(metaContainerName);
 
-                    CloudStorageAccount sourceStorageAccount = CloudStorageAccount.Parse(sourceStorage);
-                    
-                    string metaContainerName = Environment.GetEnvironmentVariable("ImageMetadataContainer");
-                    CloudBlobClient metaBlobClient = sourceStorageAccount.CreateCloudBlobClient();
-                    CloudBlobContainer metaContainer = metaBlobClient.GetContainerReference(metaContainerName);
+                //string metaname = name.Split('.').First() + ".json";
+                string metaname = Path.GetFileNameWithoutExtension(name) + ".json";
+                string ext = Path.GetExtension(name);
 
-                    //string metaname = name.Split('.').First() + ".json";
-                    string metaname = Path.GetFileNameWithoutExtension(name) + ".json";
-                    string ext = Path.GetExtension(name);
+                CloudBlockBlob metaBlob = metaContainer.GetBlockBlobReference(metaname);
 
-                    CloudBlockBlob metaBlob = metaContainer.GetBlockBlobReference(metaname);
+                bool metaBlobExists = await metaBlob.ExistsAsync();
 
-                    bool metaBlobExists = await metaBlob.ExistsAsync();
+                //string curi = metaBlob.StorageUri.ToString();
+                //log.LogInformation("Container URI: " + curi);
 
-                    //string curi = metaBlob.StorageUri.ToString();
-                    //log.LogInformation("Container URI: " + curi);
+                if(metaBlobExists)
+                {
+                    string jsonMetaData = await metaBlob.DownloadTextAsync();
+                    imageData = JsonConvert.DeserializeObject<ImageMetadata>(jsonMetaData);
 
-                    if(metaBlobExists)
-                    {
-                        string jsonMetaData = await metaBlob.DownloadTextAsync();
-                        imageData = JsonConvert.DeserializeObject<ImageMetadata>(jsonMetaData);
-
-                        log.LogInformation("Image Metadata issueType: " + imageData.issueType + " issueDescription: " + imageData.issueDescription);
-                    }
-                    else
-                    {
-                        log.LogInformation("No Metadata exists for uploaded image. Proceeding without.");
-                    }
+                    log.LogInformation("Image Metadata issueType: " + imageData.issueType + " issueDescription: " + imageData.issueDescription);
+                }
+                else
+                {
+                    log.LogInformation("No Metadata exists for uploaded image. Proceeding without.");
+                    imageData.issueType = "None Provided";
+                    imageData.issueDescription = "None Provided";
+                    imageData.uploadUserName = "Anonymous";
+                    imageData.timestamp = DateTime.Now;
+                }
 
                 using(MemoryStream blobMemStream = new MemoryStream())
                 {
