@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp.csproj", "{56123C7F-2B69-45B0-B987-19CCE6D102A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PredictionDetails", "..\PredictionDetails\PredictionDetails.csproj", "{4C71D5F6-B3D2-4C2C-9F61-6A92367EC624}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageDetails", "..\ImageDetails\ImageDetails.csproj", "{4C71D5F6-B3D2-4C2C-9F61-6A92367EC624}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
