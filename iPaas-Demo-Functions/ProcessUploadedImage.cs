@@ -43,20 +43,22 @@ namespace iPaaSDemoProj
 
                     CloudBlockBlob metaBlob = metaContainer.GetBlockBlobReference(metaname);
 
-                    string curi = metaBlob.StorageUri.ToString();
-                    log.LogInformation("Container URI: " + curi);
+                    bool metaBlobExists = await metaBlob.ExistsAsync();
 
-                    string jsonMetaData = await metaBlob.DownloadTextAsync();
+                    //string curi = metaBlob.StorageUri.ToString();
+                    //log.LogInformation("Container URI: " + curi);
 
-                    imageData = JsonConvert.DeserializeObject<ImageMetadata>(jsonMetaData);
+                    if(metaBlobExists)
+                    {
+                        string jsonMetaData = await metaBlob.DownloadTextAsync();
+                        imageData = JsonConvert.DeserializeObject<ImageMetadata>(jsonMetaData);
 
-                    //metaBlob.Download()
-
-                    //imageData = await System.Text.Json.JsonSerializer.DeserializeAsync<ImageMetadata>(blobMetaMemStream);
-
-                    log.LogInformation("Image Metadata issueType: " + imageData.issueType + " issueDescription: " + imageData.issueDescription);
-                    
-
+                        log.LogInformation("Image Metadata issueType: " + imageData.issueType + " issueDescription: " + imageData.issueDescription);
+                    }
+                    else
+                    {
+                        log.LogInformation("No Metadata exists for uploaded image. Proceeding without.");
+                    }
 
                 using(MemoryStream blobMemStream = new MemoryStream())
                 {
