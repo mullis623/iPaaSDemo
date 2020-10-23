@@ -6,7 +6,10 @@ name: Function Deploy
 # events but only for the main branch
 on:
   push:
-    branches: [ main ]
+    branches: 
+    - main
+    paths:
+    - 'iPaas-Demo-Functions/**'
 
 env:
   AZURE_FUNCTIONAPP_NAME: iPaaS-Demo-Functions  # set this to your application's name
