@@ -1,40 +1,169 @@
-﻿using Azure.Storage;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
+﻿using Microsoft.Azure.Storage.Blob;
+using Microsoft.Azure.Storage.Auth;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Diagnostics.Tracing;
-using System.Dynamic;
 using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using ConsoleApp.Models;
-using PredictionDetails;
+using ImageDetails;
 
 
 namespace ConsoleApp
 {
     public static class Program
     {
+        
         //This console app invokes the CustomVision service providing it a locally stored image. The CustomVision service returns a JSON object with the results of the prediction for the provided image.
         //This logic will have to be moved to an Azure Function with a Blob trigger.  
         public static void Main()
         {
-            Console.Write("Enter image file path: ");
-            string imageFilePath = Console.ReadLine();
 
-            MakePredictionRequest(imageFilePath).Wait();
+            AzureStorageConfig strgConfig = new AzureStorageConfig
+            {
+                //AccountName = "blobuploadedimages",
+                AccountName = "devstoreaccount1",
+                ImageContainer = "images",
+                MetaContainer = "imagemetadata",
+                //AccountKey = "87nnRatUOR3SxwOHKsrU4B2c2MF6uIQZE7S1kUgArHIGDNzViLSbuWwWPdk9jlJBSSklJRxxe7N9PEdhbxP3bQ=="
+                AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+            };
+            
+            ImageMetadata imageData = new ImageMetadata();
+            imageData.timestamp = DateTime.Now;
+            imageData.uploadUserName = "shmulli";
+            imageData.geoLatCoordinate =  40.751421;
+            imageData.geoLongCoordinate = -73.991669;
+
+            string imageFilePath = null;
+
+            while(imageFilePath == null)
+            {
+                Console.Write("Enter image file path: ");
+                imageFilePath = Console.ReadLine();
+
+                if(!(File.Exists(imageFilePath)))
+                {
+                    imageFilePath = null;
+                    Console.WriteLine("Image Path entered does not exist.  Please try again.");
+                }    
+            }
+
+            Console.WriteLine("\r\nChoose an issue type to associate with image:");
+            Console.WriteLine("1) RoadDamage-Pothole");
+            Console.WriteLine("2) RoadDamage-Crack");
+            Console.WriteLine("3) Graffiti");
+            Console.WriteLine("4) UtilityInfrastructure");
+            Console.Write("\r\nEnter the number for your issue type: ");
+
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    imageData.issueType = "RoadDamage-Pothole";
+                    break;
+                case "2":
+                    imageData.issueType = "RoadDamage-Crack";
+                    break;
+                case "3":
+                    imageData.issueType = "Graffiti";
+                    break;
+                case "4":
+                    imageData.issueType = "UtilityInfrastructure";
+                    break;
+                default:
+                    imageData.issueType = "Not Reported";
+                    break;
+            }
+
+            Console.Write("Enter issue Description: ");
+            imageData.issueDescription = Console.ReadLine();
+
+            Console.WriteLine(imageFilePath);
+            Console.WriteLine(imageData.issueType);
+            Console.WriteLine(imageData.issueDescription);            
+            
+            TriggerUploadToStorage(imageData, imageFilePath, strgConfig).Wait();
 
             Console.WriteLine("\n\nHit ENTER to exit...");
             Console.ReadLine();
+
         }
 
-        public static async Task MakePredictionRequest(string imageFilePath)
+        public static async Task<bool> TriggerUploadToStorage(ImageMetadata metadata, string filePath, AzureStorageConfig _storageConfig)
+        {
+
+            string fileNameNoExtension = Path.GetFileNameWithoutExtension(filePath);
+            string fileName = Path.GetFileName(filePath);
+            string urlPrefix;
+
+            if(_storageConfig.AccountName == "devstoreaccount1")
+            {
+                urlPrefix = "http://127.0.0.1:10000/" + _storageConfig.AccountName + "/";
+            }
+            else
+            {
+                urlPrefix = "https://" + _storageConfig.AccountName + ".blob.core.windows.net/";
+            }
+
+            // Create a URI to the blob
+            Uri metaBlobUri = new Uri(urlPrefix +
+                                  _storageConfig.MetaContainer +
+                                  "/" + fileNameNoExtension + ".json");
+
+            Uri imageBlobUri = new Uri(urlPrefix +
+                                  _storageConfig.ImageContainer +
+                                  "/" + fileName);
+
+            //Console.WriteLine("UploadURL: " + blobUri);
+
+            // Create StorageSharedKeyCredentials object by reading
+            // the values from the configuration (appsettings.json)
+            StorageCredentials storageCredentials = new StorageCredentials(_storageConfig.AccountName, _storageConfig.AccountKey);
+
+            // Create the blob client.
+            CloudBlockBlob metaBlobClient = new CloudBlockBlob(metaBlobUri, storageCredentials);
+            string metaJson = System.Text.Json.JsonSerializer.Serialize<ImageMetadata>(metadata);
+            await metaBlobClient.UploadTextAsync(metaJson);
+            
+            CloudBlockBlob imageBlobClient = new CloudBlockBlob(imageBlobUri, storageCredentials);
+
+            FileStream imageStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            await imageBlobClient.UploadFromStreamAsync(imageStream);
+
+            return await Task.FromResult(true);
+        }
+
+        /*public static async Task<bool> UploadToStorage(string contentToUpload, string fileName, AzureStorageConfig _storageConfig)
+        {
+            // Create a URI to the blob
+            Uri blobUri = new Uri("https://" +
+                                  _storageConfig.AccountName +
+                                  ".blob.core.windows.net/" +
+                                  _storageConfig.ImageContainer +
+                                  "/" + fileName);
+
+            //Console.WriteLine("UploadURL: " + blobUri);
+
+            // Create StorageSharedKeyCredentials object by reading
+            // the values from the configuration (appsettings.json)
+            StorageSharedKeyCredential storageCredentials =
+                new StorageSharedKeyCredential(_storageConfig.AccountName, _storageConfig.AccountKey);
+
+            // Create the blob client.
+            BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
+
+            if(File.Exists(contentToUpload))
+            {
+                FileStream imageStream = new FileStream(contentToUpload, FileMode.Open, FileAccess.Read);
+                await blobClient.UploadAsync(imageStream);
+            }
+            else
+            {
+                await blobClient.UploadAsync(contentToUpload);
+            }
+
+            return await Task.FromResult(true);
+        }*/
+
+        /*public static async Task MakePredictionRequest(string imageFilePath)
         {
             var client = new HttpClient();
 
@@ -100,13 +229,7 @@ namespace ConsoleApp
                 }
             }
 
-            AzureStorageConfig strgConfig = new AzureStorageConfig
-            {
-                AccountName = "blobuploadedimages",
-                ImageContainer = "processedimages",
-                ThumbnailContainer = "images",
-                AccountKey = "87nnRatUOR3SxwOHKsrU4B2c2MF6uIQZE7S1kUgArHIGDNzViLSbuWwWPdk9jlJBSSklJRxxe7N9PEdhbxP3bQ=="
-            };
+            
 
             string fileName = Path.GetFileName(imagePath);
             //Console.WriteLine("FileName: " + fileName);
@@ -116,32 +239,7 @@ namespace ConsoleApp
             //if root.imageValid = true, then write this to the images container which will trigger the Logic App. 
         }
 
-        public static async Task<bool> UploadFileToStorage(Stream fileStream, string fileName,
-                                                    AzureStorageConfig _storageConfig)
-        {
-            // Create a URI to the blob
-            Uri blobUri = new Uri("https://" +
-                                  _storageConfig.AccountName +
-                                  ".blob.core.windows.net/" +
-                                  _storageConfig.ImageContainer +
-                                  "/" + fileName);
-
-            Console.WriteLine("UploadURL: " + blobUri);
-
-            // Create StorageSharedKeyCredentials object by reading
-            // the values from the configuration (appsettings.json)
-            StorageSharedKeyCredential storageCredentials =
-                new StorageSharedKeyCredential(_storageConfig.AccountName, _storageConfig.AccountKey);
-
-            // Create the blob client.
-            BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
-
-            // Upload the file
-            await blobClient.UploadAsync(fileStream);
-
-            return await Task.FromResult(true);
-        }
-
+        
         // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
         /*public class Prediction
         /{
@@ -149,7 +247,7 @@ namespace ConsoleApp
             public string tagId { get; set; }
             public string tagName { get; set; }
 
-        }*/
+        }
         public class Root
         {
             public string id { get; set; }
@@ -158,6 +256,6 @@ namespace ConsoleApp
             public DateTime created { get; set; }
             public List<Prediction> predictions { get; set; }
             public bool imageValid { get; set; }
-        }
+        }*/
     }
 }
