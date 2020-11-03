@@ -19,12 +19,12 @@ namespace ConsoleApp
 
             AzureStorageConfig strgConfig = new AzureStorageConfig
             {
-                //AccountName = "blobuploadedimages",
-                AccountName = "devstoreaccount1",
+                AccountName = "blobuploadedimages",
+                //AccountName = "devstoreaccount1",
                 ImageContainer = "images",
                 MetaContainer = "imagemetadata",
-                //AccountKey = "87nnRatUOR3SxwOHKsrU4B2c2MF6uIQZE7S1kUgArHIGDNzViLSbuWwWPdk9jlJBSSklJRxxe7N9PEdhbxP3bQ=="
-                AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+                AccountKey = "87nnRatUOR3SxwOHKsrU4B2c2MF6uIQZE7S1kUgArHIGDNzViLSbuWwWPdk9jlJBSSklJRxxe7N9PEdhbxP3bQ=="
+                //AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
             };
             
             ImageMetadata imageData = new ImageMetadata();
