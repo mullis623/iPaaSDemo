@@ -105,6 +105,10 @@ namespace iPaaSDemoProj
                         
                     }
 
+                    string newMetaJson = System.Text.Json.JsonSerializer.Serialize<ImageMetadata>(imageData);
+                    CloudBlockBlob newMetaBlob = metaContainer.GetBlockBlobReference(imageData.id + ".json");
+                    await newMetaBlob.UploadTextAsync(newMetaJson);
+
                     if(imageData.isValidatedIssue)
                     {
 
@@ -159,10 +163,6 @@ namespace iPaaSDemoProj
                         await image.UploadFromStreamAsync(blobMemStream);
 
                     }
-
-                    string newMetaJson = System.Text.Json.JsonSerializer.Serialize<ImageMetadata>(imageData);
-                    CloudBlockBlob newMetaBlob = metaContainer.GetBlockBlobReference(imageData.id + ".json");
-                    await newMetaBlob.UploadTextAsync(newMetaJson);
 
                     log.LogInformation("Removing Image from Upload Container");
                     await myBlob.DeleteIfExistsAsync();
