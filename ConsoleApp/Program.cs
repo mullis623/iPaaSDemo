@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.Auth;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -17,21 +18,23 @@ namespace ConsoleApp
         public static void Main()
         {
 
-            AzureStorageConfig strgConfig = new AzureStorageConfig
-            {
-                AccountName = "blobuploadedimages",
-                //AccountName = "devstoreaccount1",
-                ImageContainer = "images",
-                MetaContainer = "imagemetadata",
-                AccountKey = "87nnRatUOR3SxwOHKsrU4B2c2MF6uIQZE7S1kUgArHIGDNzViLSbuWwWPdk9jlJBSSklJRxxe7N9PEdhbxP3bQ=="
-                //AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
-            };
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+               .AddEnvironmentVariables();
+
+            string environment = "Prod";
+            string sectionName = "StorageAccountConfig:" + environment; 
+
+            IConfigurationRoot configuration = builder.Build();
+            var strgConfig = new AzureStorageConfig();
+            configuration.GetSection(sectionName).Bind(strgConfig);
             
             ImageMetadata imageData = new ImageMetadata();
             imageData.timestamp = DateTime.Now;
-            imageData.uploadUserName = "shmulli";
-            imageData.geoLatCoordinate =  40.751421;
-            imageData.geoLongCoordinate = -73.991669;
+            //imageData.uploadUserName = "shmulli";
+            //imageData.geoLatCoordinate =  40.751421;
+            //imageData.geoLongCoordinate = -73.991669;
 
             string imageFilePath = null;
 
@@ -76,10 +79,21 @@ namespace ConsoleApp
             Console.Write("Enter issue Description: ");
             imageData.issueDescription = Console.ReadLine();
 
-            Console.WriteLine(imageFilePath);
-            Console.WriteLine(imageData.issueType);
-            Console.WriteLine(imageData.issueDescription);            
-            
+            //Console.WriteLine(imageFilePath);
+            //Console.WriteLine(imageData.issueType);
+            //Console.WriteLine(imageData.issueDescription);
+
+            Console.Write("Enter Latitude Coordinate of Issue: ");
+            string latCoordinate = Console.ReadLine();
+            imageData.geoLatCoordinate = double.Parse(latCoordinate);
+
+            Console.Write("Enter Longitude Coordinate of Issue: ");
+            string longCoordinate = Console.ReadLine();
+            imageData.geoLongCoordinate = double.Parse(longCoordinate);
+
+            Console.Write("Enter your username: ");
+            imageData.uploadUserName = Console.ReadLine();
+
             TriggerUploadToStorage(imageData, imageFilePath, strgConfig).Wait();
 
             Console.WriteLine("\n\nHit ENTER to exit...");
