@@ -7,6 +7,11 @@
         "ArchiveImageDestContainer": "imagearchive",
         "ValidImageDestContainer": "processedimages",
         "ImageMetadataContainer": "imagemetadata",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+        "ImageContainerName": "images",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+        "AzureWebJobs.ProcessUploadedImage.Disabled": "true",
+        "CustomVisionRootUrl": "https://eastus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/3d81746b-d0f3-4216-a6f1-024c25f2c070/classify/iterations/",
+        "CustomVisionIteration": "Iteration7",
+        "CustomVisionPredictionKey": "124c2ec410304f499ee39fe957d5afb9"
     }
 }
