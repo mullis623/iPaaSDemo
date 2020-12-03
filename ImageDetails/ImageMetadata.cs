@@ -4,7 +4,13 @@ namespace ImageDetails
 {
     public class ImageMetadata
     {        
-         public string id
+        public string id
+        {
+            get;
+            set;
+        }
+
+        public string uploadedFileName
         {
             get;
             set;
