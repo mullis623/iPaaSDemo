@@ -19,7 +19,9 @@ namespace iPaas_Demo_Functions
     public static class ProcessValidImage
     {
         [FunctionName("ProcessValidImage")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
+        [return: ServiceBus("validimagequeue", Connection = "ServiceBusConnection")]
+        //public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
+        public static async Task<ImageMetadata> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
@@ -67,16 +69,6 @@ namespace iPaas_Demo_Functions
                     throw new System.InvalidOperationException("Image has not yet been validated");
                 }
 
-                imageData.issueType = issueType ?? data?.issueType;
-                imageData.issueDescription = issueDescription ?? data?.issueDescription;
-                imageData.geoLatCoordinate = geoLatCoordinate ?? data?.geoLatCoordinate;
-                imageData.geoLongCoordinate = geoLongCoordinate ?? data?.geoLongCoordinate;
-                imageData.uploadUserName = uploadUserName ?? data?.uploadUserName;
-
-                string metaJson = System.Text.Json.JsonSerializer.Serialize<ImageMetadata>(imageData);
-                await metaBlob.UploadTextAsync(metaJson);
-
-
                 string blobName = imageData.uploadedFileName;
                 
                 string imageContainerName = Environment.GetEnvironmentVariable("ImageContainerName");
@@ -97,7 +89,20 @@ namespace iPaas_Demo_Functions
                     string ext = Path.GetExtension(blobName);
                     CloudBlockBlob newImageBlob = destContainer.GetBlockBlobReference(imageData.id + ext);
                     await newImageBlob.StartCopyAsync(imageBlob);
+                    string blobUrl = newImageBlob.StorageUri.PrimaryUri.AbsoluteUri;
+                    log.LogInformation("Blob Url: " + blobUrl);
                     await imageBlob.DeleteIfExistsAsync();
+
+                    imageData.blobUrl = blobUrl;
+                    imageData.issueType = issueType ?? data?.issueType;
+                    imageData.issueDescription = issueDescription ?? data?.issueDescription;
+                    imageData.geoLatCoordinate = geoLatCoordinate ?? data?.geoLatCoordinate;
+                    imageData.geoLongCoordinate = geoLongCoordinate ?? data?.geoLongCoordinate;
+                    imageData.uploadUserName = uploadUserName ?? data?.uploadUserName;
+
+                    string metaJson = System.Text.Json.JsonSerializer.Serialize<ImageMetadata>(imageData);
+                    await metaBlob.UploadTextAsync(metaJson);
+
                 }
                 else
                 {
@@ -110,9 +115,10 @@ namespace iPaas_Demo_Functions
                 log.LogInformation($"Error! Something went wrong: {ex.Message}");
             }
 
-            string responseMessage = "Ok";
+            //string responseMessage = "Ok";
+            return imageData;
 
-            return new OkObjectResult(responseMessage);
+            //return new OkObjectResult(responseMessage);
         }
     }
 }
