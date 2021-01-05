@@ -41,7 +41,8 @@ namespace iPaas_Demo_Functions
 
             ImageMetadata imageData = new ImageMetadata(){
                 timestamp = DateTime.Now,
-                uploadedFileName = blobName
+                uploadedFileName = blobName,
+                id = Path.GetFileNameWithoutExtension(blobName)
             };            
 
             using(MemoryStream blobMemStream = new MemoryStream())
@@ -124,7 +125,7 @@ namespace iPaas_Demo_Functions
                 //if ((item.tagName == "issues") && (item.probability > .75))
                 if ((item.tagName == "issues") && (item.probability > .75))
                 {
-                    metadata.id = root.id;
+                    //metadata.id = root.id;
                     metadata.probability = item.probability;
                     metadata.tagName = item.tagName;
                     metadata.isValidatedIssue = true;

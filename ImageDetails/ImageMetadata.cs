@@ -15,7 +15,13 @@ namespace ImageDetails
             get;
             set;
         }
-        
+
+         public string blobUrl
+        {
+            get;
+            set;
+        }
+
         public string uploadUserName
         {
             get;
