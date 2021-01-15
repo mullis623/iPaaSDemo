@@ -10,12 +10,47 @@
         },
         "subscriptionId": {
             "type": "string"
+        },
+        "adminEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "The email address of the owner of the service"
+            }
+        },
+        "adminName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the owner of the service"
+            }
         }
     },
     "variables": {
         "resourceName": "[concat(parameters('resourcePrefix'), '-ipaas-', parameters('environment'))]"
     },
     "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "ApiManagement",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://pythondjangodemo.blob.core.windows.net/azuretemplates/api-management.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "apiManagementName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "adminName": {
+                        "value": "[parameters('adminName')]"
+                    },
+                    "adminEmail": {
+                        "value": "[parameters('adminEmail')]"
+                    }
+                }
+            }
+        },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
