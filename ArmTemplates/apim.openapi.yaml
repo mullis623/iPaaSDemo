@@ -1,0 +1,35 @@
+openapi: 3.0.1
+info:
+  title: iPaaS-Demo-Functions
+  description: Import from "iPaaS-Demo-Functions" Function App
+  version: '1.0'
+servers:
+  - url: https://ipaas-demo-functions-apim.azure-api.net/iPaaS-Demo-Functions
+paths:
+  /ValidateImage:
+    post:
+      summary: ValidateImage
+      operationId: post-validateimage
+      responses:
+        '200':
+          description: 
+  /ProcessValidImage:
+    post:
+      summary: ProcessValidImage
+      operationId: post-processvalidimage
+      responses:
+        '200':
+          description: 
+components:
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      name: Ocp-Apim-Subscription-Key
+      in: header
+    apiKeyQuery:
+      type: apiKey
+      name: subscription-key
+      in: query
+security:
+  - apiKeyHeader: [ ]
+  - apiKeyQuery: [ ]
