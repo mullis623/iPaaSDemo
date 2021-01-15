@@ -1,0 +1,144 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string"
+        },
+        "resourcePrefix": {
+            "type": "string"
+        },
+        "subscriptionId": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "resourceName": "[concat(parameters('resourcePrefix'), '-ipaas-', parameters('environment'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "AppServices",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://pythondjangodemo.blob.core.windows.net/azuretemplates/app-services.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServiceName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[variables('resourceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "CognitiveServices",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://pythondjangodemo.blob.core.windows.net/azuretemplates/cognitive-services.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "cognitiveServicesPredictionName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "cognitiveServicesVisionName": {
+                        "value": "[variables('resourceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "CosmosDb",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://pythondjangodemo.blob.core.windows.net/azuretemplates/cosmosdb.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "cosmosDbAccountName": {
+                        "value": "[variables('resourceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "LogicApps",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'CosmosDb')]",
+                "[resourceId('Microsoft.Resources/deployments', 'ServiceBus')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://pythondjangodemo.blob.core.windows.net/azuretemplates/logic-apps.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "logicAppName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "cosmosDbAccountName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "cosmosDbPrimaryMasterKey": {
+                        "value": "[reference('CosmosDb').outputs.primaryMasterKey.value]"
+                    },
+                    "serviceBusConnectionString": {
+                        "value": "[reference('ServiceBus').outputs.connectionString.value]"
+                    },
+                    "subscriptionId": {
+                        "value": "[parameters('subscriptionId')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "ServiceBus",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://pythondjangodemo.blob.core.windows.net/azuretemplates/service-bus.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "serviceBusNamespace": {
+                        "value": "[variables('resourceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "Storage",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://pythondjangodemo.blob.core.windows.net/azuretemplates/storage.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storageAccountName": {
+                        "value": "[replace(variables('resourceName'), '-', '')]"
+                    }
+                }
+            }
+        }
+    ]
+}

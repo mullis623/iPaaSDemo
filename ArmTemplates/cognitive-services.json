@@ -1,0 +1,49 @@
+
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "cognitiveServicesPredictionName": {
+            "type": "string"
+        },
+        "cognitiveServicesVisionName": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "cognitiveServicesPredictionName": "[concat('cog-predication-', parameters('cognitiveServicesPredictionName'))]",
+        "cognitiveServicesVisionName": "[concat('cog-vision-', parameters('cognitiveServicesVisionName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[variables('cognitiveServicesPredictionName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "S0"
+            },
+            "kind": "CustomVision.Prediction",
+            "properties": {
+                "customSubDomainName": "[variables('cognitiveServicesPredictionName')]",
+                "privateEndpointConnections": [],
+                "publicNetworkAccess": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[variables('cognitiveServicesVisionName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "S0"
+            },
+            "kind": "CustomVision.Training",
+            "properties": {
+                "customSubDomainName": "[variables('cognitiveServicesVisionName')]",
+                "privateEndpointConnections": [],
+                "publicNetworkAccess": "Enabled"
+            }
+        }
+    ]
+}

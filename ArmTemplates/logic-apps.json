@@ -1,0 +1,289 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "logicAppName": {
+            "type": "string"
+        },
+        "cosmosDbAccountName": {
+            "type": "string"
+        },
+        "cosmosDbPrimaryMasterKey": {
+            "type": "string"
+        },
+        "serviceBusConnectionString": {
+            "type": "string"
+        },
+        "subscriptionId": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "apiConnectionNameCosmosDb": "[concat('la-api-cosmos-', parameters('logicAppName'))]",
+        "apiConnectionNameOffice365": "[concat('la-api-office365-', parameters('logicAppName'))]",
+        "apiConnectionNameServiceBus": "[concat('la-api-servicebus-', parameters('logicAppName'))]",
+        "logicAppName": "[concat('la-', parameters('logicAppName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('logicAppName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameCosmosDb'))]",
+                "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameOffice365'))]",
+                "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameServiceBus'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "When_a_message_is_received_in_a_queue_(auto-complete)": {
+                            "recurrence": {
+                                "frequency": "Minute",
+                                "interval": 1
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['servicebus']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/@{encodeURIComponent(encodeURIComponent('validimagequeue'))}/messages/head",
+                                "queries": {
+                                    "queueType": "Main"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Call_API_in_APIM": {
+                            "runAfter": {
+                                "Parse_Service_Bus_Message_JSON": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Http",
+                            "inputs": {
+                                "headers": {
+                                    "Ocp-Apim-Subscription-Key": "4441f784dadc4d74bf2b06578e2bf11f",
+                                    "Ocp-Apim-Trace": "true"
+                                },
+                                "method": "POST",
+                                "uri": "https://ipaasdemoapim.azure-api.net/servicerequest/new"
+                            }
+                        },
+                        "Create_Cosmos_DB_Document_for_Issue": {
+                            "runAfter": {
+                                "Parse_ServiceNow_JSON_": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "ServiceTicketNo": "@body('Parse_ServiceNow_JSON_')?['ServiceTicketNo']",
+                                    "blobURL": "@body('Parse_Service_Bus_Message_JSON')?['blobUrl']",
+                                    "geoLatCoordinate": "@body('Parse_Service_Bus_Message_JSON')?['geoLatCoordinate']",
+                                    "geoLongCoordinate": "@body('Parse_Service_Bus_Message_JSON')?['geoLongCoordinate']",
+                                    "id": "@body('Parse_Service_Bus_Message_JSON')?['id']",
+                                    "isValidatedIssue": "@body('Parse_Service_Bus_Message_JSON')?['isValidatedIssue']",
+                                    "issueDescription": "@body('Parse_Service_Bus_Message_JSON')?['issueDescription']",
+                                    "issueType": "@body('Parse_Service_Bus_Message_JSON')?['issueType']",
+                                    "probability": "@body('Parse_Service_Bus_Message_JSON')?['probability']",
+                                    "tagName": "@body('Parse_Service_Bus_Message_JSON')?['tagName']",
+                                    "timestamp": "@body('Parse_Service_Bus_Message_JSON')?['timestamp']",
+                                    "uploadUserName": "@body('Parse_Service_Bus_Message_JSON')?['uploadUserName']"
+                                },
+                                "headers": {
+                                    "x-ms-documentdb-raw-partitionkey": "\"@{body('Parse_Service_Bus_Message_JSON')?['issueType']}\""
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['documentdb']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/dbs/@{encodeURIComponent('ImageMetadataDB')}/colls/@{encodeURIComponent('ImageDetailsContainer')}/docs"
+                            }
+                        },
+                        "Parse_ServiceNow_JSON_": {
+                            "runAfter": {
+                                "Call_API_in_APIM": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "@body('Call_API_in_APIM')",
+                                "schema": {
+                                    "properties": {
+                                        "ServiceTicketNo": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "Parse_Service_Bus_Message_JSON": {
+                            "runAfter": {},
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "@json(base64ToString(triggerBody()?['ContentData']))",
+                                "schema": {
+                                    "properties": {
+                                        "blobUrl": {
+                                            "type": "string"
+                                        },
+                                        "geoLatCoordinate": {
+                                            "type": "number"
+                                        },
+                                        "geoLongCoordinate": {
+                                            "type": "number"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "isValidatedIssue": {
+                                            "type": "boolean"
+                                        },
+                                        "issueDescription": {
+                                            "type": "string"
+                                        },
+                                        "issueType": {
+                                            "type": "string"
+                                        },
+                                        "probability": {
+                                            "type": "number"
+                                        },
+                                        "tagName": {
+                                            "type": "string"
+                                        },
+                                        "timestamp": {
+                                            "type": "string"
+                                        },
+                                        "uploadUserName": {
+                                            "type": "string"
+                                        },
+                                        "uploadedFileName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "Send_an_email_to_City_Ops_Managers": {
+                            "runAfter": {
+                                "Create_Cosmos_DB_Document_for_Issue": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p><span style=\"color: rgb(44,130,201)\">Issue Type: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_Service_Bus_Message_JSON')?['issueType']}</span><span style=\"color: rgb(44,130,201)\"></span><br>\n<span style=\"color: rgb(44,130,201)\">Issue Description: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_Service_Bus_Message_JSON')?['issueDescription']}</span><span style=\"color: rgb(44,130,201)\"></span><br>\n<span style=\"color: rgb(44,130,201)\">Service Now Ticket Number: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_ServiceNow_JSON_')?['ServiceTicketNo']}</span><span style=\"color: rgb(44,130,201)\"></span></p>",
+                                    "Subject": "Citizen Image Uploaded to Blob Storage",
+                                    "To": "shmulli@microsoft.com; rujabbar@microsoft.com; daghazal@microsoft.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['office365']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "documentdb": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameCosmosDb'))]",
+                                "connectionName": "documentdb",
+                                "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/documentdb')]"
+                            },
+                            "office365": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameOffice365'))]",
+                                "connectionName": "office365",
+                                "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/office365')]"
+                            },
+                            "servicebus": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameServiceBus'))]",
+                                "connectionName": "servicebus",
+                                "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/servicebus')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('apiConnectionNameCosmosDb')]",
+            "location": "[resourceGroup().location]",
+            "kind": "V1",
+            "properties": {
+                "displayName": "CosmosDBConnection",
+                "customParameterValues": {},
+                "parameterValues": {
+                    "databaseAccount": "[parameters('cosmosDbAccountName')]",
+                    "accessKey": "[parameters('cosmosDbPrimaryMasterKey')]"
+                },
+                "api": {
+                    "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/documentdb')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('apiConnectionNameOffice365')]",
+            "location": "[resourceGroup().location]",
+            "kind": "V1",
+            "properties": {
+                "displayName": "Office365Connection",
+                "customParameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/office365')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('apiConnectionNameServiceBus')]",
+            "location": "[resourceGroup().location]",
+            "kind": "V1",
+            "properties": {
+                "displayName": "ServiceBusConnection",
+                "customParameterValues": {},
+                "parameterValues": {
+                    "connectionString": "[parameters('serviceBusConnectionString')]"
+                },
+                "api": {
+                    "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/servicebus')]"
+                }
+            }
+        }
+    ]
+}
