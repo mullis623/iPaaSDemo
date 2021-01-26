@@ -13,9 +13,6 @@
         },
         "serviceBusConnectionString": {
             "type": "string"
-        },
-        "subscriptionId": {
-            "type": "string"
         }
     },
     "variables": {
@@ -219,17 +216,17 @@
                             "documentdb": {
                                 "connectionId": "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameCosmosDb'))]",
                                 "connectionName": "documentdb",
-                                "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/documentdb')]"
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/documentdb')]"
                             },
                             "office365": {
                                 "connectionId": "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameOffice365'))]",
                                 "connectionName": "office365",
-                                "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/office365')]"
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/office365')]"
                             },
                             "servicebus": {
                                 "connectionId": "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameServiceBus'))]",
                                 "connectionName": "servicebus",
-                                "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/servicebus')]"
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/servicebus')]"
                             }
                         }
                     }
@@ -250,7 +247,7 @@
                     "accessKey": "[parameters('cosmosDbPrimaryMasterKey')]"
                 },
                 "api": {
-                    "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/documentdb')]"
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/documentdb')]"
                 }
             }
         },
@@ -264,7 +261,7 @@
                 "displayName": "Office365Connection",
                 "customParameterValues": {},
                 "api": {
-                    "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/office365')]"
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/office365')]"
                 }
             }
         },
@@ -281,7 +278,7 @@
                     "connectionString": "[parameters('serviceBusConnectionString')]"
                 },
                 "api": {
-                    "id": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/servicebus')]"
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/servicebus')]"
                 }
             }
         }

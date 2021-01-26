@@ -3,13 +3,22 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "environment": {
-            "type": "string"
+            "type": "string",
+            "allowedValues": [
+                "dev",
+                "test",
+                "prod"
+            ],
+            "metadata": {
+                "description": "Name of the environment for Azure resource naming purposes"
+            }
         },
         "resourcePrefix": {
-            "type": "string"
-        },
-        "subscriptionId": {
-            "type": "string"
+            "type": "string",
+            "minLength": 2,
+            "metadata": {
+                "description": "Unique prefix to prepend to Azure resource names"
+            }
         },
         "adminEmail": {
             "type": "string",
@@ -22,6 +31,22 @@
             "metadata": {
                 "description": "The name of the owner of the service"
             }
+        },
+        "imageArchiveContainer": {
+            "type": "string",
+            "defaultValue": "imagearchive"
+        },
+        "imageMetadataContainer": {
+            "type": "string",
+            "defaultValue": "imagemetadata"
+        },
+        "processedImageContainer": {
+            "type": "string",
+            "defaultValue": "processedimages"
+        },
+        "imageContainer": {
+            "type": "string",
+            "defaultValue": "images"
         }
     },
     "variables": {
@@ -55,6 +80,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "name": "AppServices",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'Storage')]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -67,6 +95,24 @@
                     },
                     "appServicePlanName": {
                         "value": "[variables('resourceName')]"
+                    },
+                    "imageArchiveContainer": {
+                        "value": "[parameters('imageArchiveContainer')]"
+                    },
+                    "imageMetadataContainer": {
+                        "value": "[parameters('imageMetadataContainer')]"
+                    },
+                    "processedImageContainer": {
+                        "value": "[parameters('processedImageContainer')]"
+                    },
+                    "imageContainer": {
+                        "value": "[parameters('imageContainer')]"
+                    },
+                    "serviceBusConnectionString": {
+                        "value": "[reference('ServiceBus').outputs.connectionString.value]"
+                    },
+                    "storageAccountConnectionString": {
+                        "value": "[reference('Storage').outputs.connectionString.value]"
                     }
                 }
             }
@@ -134,9 +180,6 @@
                     },
                     "serviceBusConnectionString": {
                         "value": "[reference('ServiceBus').outputs.connectionString.value]"
-                    },
-                    "subscriptionId": {
-                        "value": "[parameters('subscriptionId')]"
                     }
                 }
             }
@@ -171,6 +214,18 @@
                 "parameters": {
                     "storageAccountName": {
                         "value": "[replace(variables('resourceName'), '-', '')]"
+                    },
+                    "imageArchiveContainer": {
+                        "value": "[parameters('imageArchiveContainer')]"
+                    },
+                    "imageMetadataContainer": {
+                        "value": "[parameters('imageMetadataContainer')]"
+                    },
+                    "processedImageContainer": {
+                        "value": "[parameters('processedImageContainer')]"
+                    },
+                    "imageContainer": {
+                        "value": "[parameters('imageContainer')]"
                     }
                 }
             }

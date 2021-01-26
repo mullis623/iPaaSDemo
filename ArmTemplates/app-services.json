@@ -7,6 +7,24 @@
         },
         "appServicePlanName": {
             "type": "string"
+        },
+        "imageArchiveContainer": {
+            "type": "string"
+        },
+        "imageMetadataContainer": {
+            "type": "string"
+        },
+        "processedImageContainer": {
+            "type": "string"
+        },
+        "imageContainer": {
+            "type": "string"
+        },
+        "storageAccountConnectionString": {
+            "type": "string"
+        },
+        "serviceBusConnectionString": {
+            "type": "string"
         }
     },
     "variables": {
@@ -46,6 +64,46 @@
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[reference(resourceId('microsoft.insights/components', variables('appInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+                        },
+                        {
+                            "name": "ArchiveImageDestContainer",
+                            "value": "[parameters('imageArchiveContainer')]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[parameters('storageAccountConnectionString')]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[parameters('storageAccountConnectionString')]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('appServiceName')]"
+                        },
+                        {
+                            "name": "ImageContainerName",
+                            "value": "[parameters('imageContainer')]"
+                        },
+                        {
+                            "name": "ImageMetadataContainer",
+                            "value": "[parameters('imageMetadataContainer')]"
+                        },
+                        {
+                            "name": "ValidImageDestContainer",
+                            "value": "[parameters('processedImageContainer')]"
+                        },
+                        {
+                            "name": "NewImageSourceStorage",
+                            "value": "[parameters('storageAccountConnectionString')]"
+                        },
+                        {
+                            "name": "ValidImageDestStorage",
+                            "value": "[parameters('storageAccountConnectionString')]"
+                        },
+                        {
+                            "name": "ServiceBusConnection",
+                            "value": "[parameters('serviceBusConnectionString')]"
                         }
                     ]
                 }

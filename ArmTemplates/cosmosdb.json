@@ -32,7 +32,7 @@
                 "virtualNetworkRules": [],
                 "disableKeyBasedMetadataWriteAccess": false,
                 "enableFreeTier": false,
-                "enableAnalyticalStorage": false,
+                "enableAnalyticalStorage": true,
                 "createMode": "Default",
                 "databaseAccountOfferType": "Standard",
                 "consistencyPolicy": {
@@ -85,6 +85,7 @@
             "properties": {
                 "resource": {
                     "id": "ImageDetailsContainer",
+                    "analyticalStorageTtl": -1,
                     "indexingPolicy": {
                         "indexingMode": "consistent",
                         "automatic": true,
