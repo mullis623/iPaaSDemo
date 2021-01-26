@@ -104,6 +104,18 @@
                         {
                             "name": "ServiceBusConnection",
                             "value": "[parameters('serviceBusConnectionString')]"
+                        },
+                        {
+                            "name": "CustomVisionIteration",
+                            "value": ""
+                        },
+                        {
+                            "name": "CustomVisionPredictionKey",
+                            "value": ""
+                        },
+                        {
+                            "name": "CustomVisionRootUrl",
+                            "value": ""
                         }
                     ]
                 }
