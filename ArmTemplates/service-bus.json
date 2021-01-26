@@ -130,7 +130,7 @@
     "outputs": {
         "connectionString": {
             "type": "string",
-            "value": "[listKeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespace'), 'QueueListenPolicy'), '2017-04-01').primaryConnectionString]"
+            "value": "[listKeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespace'), 'QueueSendPolicy'), '2017-04-01').primaryConnectionString]"
         }
     }
 }
