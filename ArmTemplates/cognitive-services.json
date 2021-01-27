@@ -11,7 +11,7 @@
         }
     },
     "variables": {
-        "cognitiveServicesPredictionName": "[concat('cog-predication-', parameters('cognitiveServicesPredictionName'))]",
+        "cognitiveServicesPredictionName": "[concat('cog-prediction-', parameters('cognitiveServicesPredictionName'))]",
         "cognitiveServicesVisionName": "[concat('cog-vision-', parameters('cognitiveServicesVisionName'))]"
     },
     "resources": [
