@@ -19,5 +19,6 @@ Template takes three parameters:
 
 Environment and resource prefix are used as part of the infrastructure name in order to generate unique names.
 
-## az cli sample
-`az deployment group create --name 2020-01-15T0839 --resource-group rg-ipaas-dev --template-file deployTemplate.json`
+# Manual Setup
+1. Configure the Office 365 API Connector for the Logic App
+2. Configure the `CustomVisionIteration`, `CustomVisionPredictionKey`, and `CustomVisionRootUrl` App Settings in Function App to use Shaun's Cognitive Services.
