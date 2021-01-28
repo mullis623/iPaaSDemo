@@ -74,14 +74,6 @@
                             "value": "[parameters('storageAccountConnectionString')]"
                         },
                         {
-                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[parameters('storageAccountConnectionString')]"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTSHARE",
-                            "value": "[variables('appServiceName')]"
-                        },
-                        {
                             "name": "ImageContainerName",
                             "value": "[parameters('imageContainer')]"
                         },
@@ -106,16 +98,16 @@
                             "value": "[parameters('serviceBusConnectionString')]"
                         },
                         {
-                            "name": "CustomVisionIteration",
-                            "value": ""
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[parameters('storageAccountConnectionString')]"
                         },
                         {
-                            "name": "CustomVisionPredictionKey",
-                            "value": ""
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[variables('appServiceName')]"
                         },
                         {
-                            "name": "CustomVisionRootUrl",
-                            "value": ""
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
                         }
                     ]
                 }
