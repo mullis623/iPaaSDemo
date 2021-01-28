@@ -10,6 +10,7 @@ Few options:
 3. Click the button
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fpythondjangodemo.blob.core.windows.net%2Fazuretemplates%2FdeployTemplate.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https://pythondjangodemo.blob.core.windows.net/azuretemplates/deployTemplate.json)
 
 # Parameters
 Template takes three parameters:
