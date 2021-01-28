@@ -13,6 +13,12 @@
         },
         "serviceBusConnectionString": {
             "type": "string"
+        },
+        "apiManagementUrl": {
+            "type": "string"
+        },
+        "apiManagementKey": {
+            "type": "string"
         }
     },
     "variables": {
@@ -68,11 +74,11 @@
                         "Call_API_in_APIM": {
                             "inputs": {
                                 "headers": {
-                                    "Ocp-Apim-Subscription-Key": "4441f784dadc4d74bf2b06578e2bf11f",
+                                    "Ocp-Apim-Subscription-Key": "[parameters('apiManagementKey')]",
                                     "Ocp-Apim-Trace": "true"
                                 },
                                 "method": "POST",
-                                "uri": "https://ipaasdemoapim.azure-api.net/servicerequest/new"
+                                "uri": "[concat(parameters('apiManagementUrl'), '/servicerequest/new')]"
                             },
                             "runAfter": {
                                 "Parse_Service_Bus_Message_JSON": [

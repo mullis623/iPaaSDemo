@@ -165,6 +165,12 @@
                     },
                     "serviceBusConnectionString": {
                         "value": "[reference('ServiceBus').outputs.connectionString.value]"
+                    },
+                    "apiManagementUrl": {
+                        "value": "[reference('ApiManagement').outputs.url.value]"
+                    },
+                    "apiManagementKey": {
+                        "value": "[reference('ApiManagement').outputs.key.value]"
                     }
                 }
             }

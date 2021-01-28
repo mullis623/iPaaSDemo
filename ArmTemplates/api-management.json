@@ -97,5 +97,15 @@
         }
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "url": {
+      "type": "string",
+      "value": "[concat('https://', variables('apiManagementServiceName'), '.azure-api.net/')]"
+    },
+    "key": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ApiManagement/service/subscriptions', variables('apiManagementServiceName'), 'master'), '2019-01-01').primaryKey]"
+    }
+  }
 }
