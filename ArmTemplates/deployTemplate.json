@@ -31,26 +31,14 @@
             "metadata": {
                 "description": "The name of the owner of the service"
             }
-        },
-        "imageArchiveContainer": {
-            "type": "string",
-            "defaultValue": "imagearchive"
-        },
-        "imageMetadataContainer": {
-            "type": "string",
-            "defaultValue": "imagemetadata"
-        },
-        "processedImageContainer": {
-            "type": "string",
-            "defaultValue": "processedimages"
-        },
-        "imageContainer": {
-            "type": "string",
-            "defaultValue": "images"
         }
     },
     "variables": {
-        "resourceName": "[concat(parameters('resourcePrefix'), '-ipaas-', parameters('environment'))]"
+        "resourceName": "[concat(parameters('resourcePrefix'), '-ipaas-', parameters('environment'))]",
+        "imageArchiveContainer": "imagearchive",
+        "imageMetadataContainer": "imagemetadata",
+        "processedImageContainer": "processedimages",
+        "imageContainer": "images"
     },
     "resources": [
         {
@@ -97,16 +85,16 @@
                         "value": "[variables('resourceName')]"
                     },
                     "imageArchiveContainer": {
-                        "value": "[parameters('imageArchiveContainer')]"
+                        "value": "[variables('imageArchiveContainer')]"
                     },
                     "imageMetadataContainer": {
-                        "value": "[parameters('imageMetadataContainer')]"
+                        "value": "[variables('imageMetadataContainer')]"
                     },
                     "processedImageContainer": {
-                        "value": "[parameters('processedImageContainer')]"
+                        "value": "[variables('processedImageContainer')]"
                     },
                     "imageContainer": {
-                        "value": "[parameters('imageContainer')]"
+                        "value": "[variables('imageContainer')]"
                     },
                     "serviceBusConnectionString": {
                         "value": "[reference('ServiceBus').outputs.connectionString.value]"
@@ -128,10 +116,7 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "cognitiveServicesPredictionName": {
-                        "value": "[variables('resourceName')]"
-                    },
-                    "cognitiveServicesVisionName": {
+                    "cognitiveServicesName": {
                         "value": "[variables('resourceName')]"
                     }
                 }
@@ -216,16 +201,16 @@
                         "value": "[replace(variables('resourceName'), '-', '')]"
                     },
                     "imageArchiveContainer": {
-                        "value": "[parameters('imageArchiveContainer')]"
+                        "value": "[variables('imageArchiveContainer')]"
                     },
                     "imageMetadataContainer": {
-                        "value": "[parameters('imageMetadataContainer')]"
+                        "value": "[variables('imageMetadataContainer')]"
                     },
                     "processedImageContainer": {
-                        "value": "[parameters('processedImageContainer')]"
+                        "value": "[variables('processedImageContainer')]"
                     },
                     "imageContainer": {
-                        "value": "[parameters('imageContainer')]"
+                        "value": "[variables('imageContainer')]"
                     }
                 }
             }

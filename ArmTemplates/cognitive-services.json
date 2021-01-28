@@ -3,44 +3,25 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "cognitiveServicesPredictionName": {
-            "type": "string"
-        },
-        "cognitiveServicesVisionName": {
+        "cognitiveServicesName": {
             "type": "string"
         }
     },
     "variables": {
-        "cognitiveServicesPredictionName": "[concat('cog-prediction-', parameters('cognitiveServicesPredictionName'))]",
-        "cognitiveServicesVisionName": "[concat('cog-vision-', parameters('cognitiveServicesVisionName'))]"
+        "cognitiveServicesName": "[concat('cog-', parameters('cognitiveServicesName'))]"
     },
     "resources": [
         {
             "type": "Microsoft.CognitiveServices/accounts",
             "apiVersion": "2017-04-18",
-            "name": "[variables('cognitiveServicesPredictionName')]",
+            "name": "[variables('cognitiveServicesName')]",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "S0"
             },
-            "kind": "CustomVision.Prediction",
+            "kind": "CognitiveServices",
             "properties": {
-                "customSubDomainName": "[variables('cognitiveServicesPredictionName')]",
-                "privateEndpointConnections": [],
-                "publicNetworkAccess": "Enabled"
-            }
-        },
-        {
-            "type": "Microsoft.CognitiveServices/accounts",
-            "apiVersion": "2017-04-18",
-            "name": "[variables('cognitiveServicesVisionName')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "S0"
-            },
-            "kind": "CustomVision.Training",
-            "properties": {
-                "customSubDomainName": "[variables('cognitiveServicesVisionName')]",
+                "customSubDomainName": "[variables('cognitiveServicesName')]",
                 "privateEndpointConnections": [],
                 "publicNetworkAccess": "Enabled"
             }
