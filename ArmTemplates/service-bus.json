@@ -63,7 +63,7 @@
             ],
             "properties": {
                 "rights": [
-                    "Send"
+                    "Manage", "Send", "Listen"
                 ]
             }
         },

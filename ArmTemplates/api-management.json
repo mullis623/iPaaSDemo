@@ -81,7 +81,7 @@
             "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]"
           ],
           "properties": {
-            "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <return-response>\r\n      <set-status code=\"200\" reason=\"OK\" />\r\n      <set-header name=\"ContentType\" exists-action=\"override\">\r\n        <value>application/json</value>\r\n      </set-header>\r\n      <set-body>@(\"{\\\"ServiceTicketNo\\\": \\\"\" + System.Guid.NewGuid().ToString() + \"\\\", \\\"status\\\": \\\"OK\\\"}\")</set-body>\r\n    </return-response>\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+            "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <return-response>\r\n      <set-status code=\"200\" reason=\"OK\" />\r\n      <set-header name=\"Content-Type\" exists-action=\"override\">\r\n        <value>application/json</value>\r\n      </set-header>\r\n      <set-body>@(\"{\\\"ServiceTicketNo\\\": \\\"\" + System.Guid.NewGuid().ToString() + \"\\\", \\\"status\\\": \\\"OK\\\"}\")</set-body>\r\n    </return-response>\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
             "format": "xml"
           }
         },
@@ -139,7 +139,7 @@
   "outputs": {
     "url": {
       "type": "string",
-      "value": "[concat('https://', variables('apiManagementServiceName'), '.azure-api.net/')]"
+      "value": "[concat('https://', variables('apiManagementServiceName'), '.azure-api.net/iPaaS-Demo-Functions/')]"
     },
     "key": {
       "type": "string",
