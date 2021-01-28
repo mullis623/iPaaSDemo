@@ -66,12 +66,6 @@
                     },
                     "actions": {
                         "Call_API_in_APIM": {
-                            "runAfter": {
-                                "Parse_Service_Bus_Message_JSON": [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type": "Http",
                             "inputs": {
                                 "headers": {
                                     "Ocp-Apim-Subscription-Key": "4441f784dadc4d74bf2b06578e2bf11f",
@@ -79,18 +73,18 @@
                                 },
                                 "method": "POST",
                                 "uri": "https://ipaasdemoapim.azure-api.net/servicerequest/new"
-                            }
-                        },
-                        "Create_Cosmos_DB_Document_for_Issue": {
+                            },
                             "runAfter": {
-                                "Parse_ServiceNow_JSON_": [
+                                "Parse_Service_Bus_Message_JSON": [
                                     "Succeeded"
                                 ]
                             },
-                            "type": "ApiConnection",
+                            "type": "Http"
+                        },
+                        "Create_Cosmos_DB_Document_for_Issue": {
                             "inputs": {
                                 "body": {
-                                    "ServiceTicketNo": "@body('Parse_ServiceNow_JSON_')?['ServiceTicketNo']",
+                                    "ServiceTicketNo": "@variables('ServiceTicketNumber')",
                                     "blobURL": "@body('Parse_Service_Bus_Message_JSON')?['blobUrl']",
                                     "geoLatCoordinate": "@body('Parse_Service_Bus_Message_JSON')?['geoLatCoordinate']",
                                     "geoLongCoordinate": "@body('Parse_Service_Bus_Message_JSON')?['geoLongCoordinate']",
@@ -113,15 +107,32 @@
                                 },
                                 "method": "post",
                                 "path": "/dbs/@{encodeURIComponent('ImageMetadataDB')}/colls/@{encodeURIComponent('ImageDetailsContainer')}/docs"
-                            }
-                        },
-                        "Parse_ServiceNow_JSON_": {
+                            },
                             "runAfter": {
-                                "Call_API_in_APIM": [
+                                "Initialize_variable": [
                                     "Succeeded"
                                 ]
                             },
-                            "type": "ParseJson",
+                            "type": "ApiConnection"
+                        },
+                        "Initialize_variable": {
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "ServiceTicketNumber",
+                                        "type": "string",
+                                        "value": "@{guid()}"
+                                    }
+                                ]
+                            },
+                            "runAfter": {
+                                "Parse_ServiceNow_JSON_": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable"
+                        },
+                        "Parse_ServiceNow_JSON_": {
                             "inputs": {
                                 "content": "@body('Call_API_in_APIM')",
                                 "schema": {
@@ -135,11 +146,15 @@
                                     },
                                     "type": "object"
                                 }
-                            }
+                            },
+                            "runAfter": {
+                                "Call_API_in_APIM": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson"
                         },
                         "Parse_Service_Bus_Message_JSON": {
-                            "runAfter": {},
-                            "type": "ParseJson",
                             "inputs": {
                                 "content": "@json(base64ToString(triggerBody()?['ContentData']))",
                                 "schema": {
@@ -183,18 +198,14 @@
                                     },
                                     "type": "object"
                                 }
-                            }
+                            },
+                            "runAfter": {},
+                            "type": "ParseJson"
                         },
                         "Send_an_email_to_City_Ops_Managers": {
-                            "runAfter": {
-                                "Create_Cosmos_DB_Document_for_Issue": [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type": "ApiConnection",
                             "inputs": {
                                 "body": {
-                                    "Body": "<p><span style=\"color: rgb(44,130,201)\">Issue Type: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_Service_Bus_Message_JSON')?['issueType']}</span><span style=\"color: rgb(44,130,201)\"></span><br>\n<span style=\"color: rgb(44,130,201)\">Issue Description: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_Service_Bus_Message_JSON')?['issueDescription']}</span><span style=\"color: rgb(44,130,201)\"></span><br>\n<span style=\"color: rgb(44,130,201)\">Service Now Ticket Number: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_ServiceNow_JSON_')?['ServiceTicketNo']}</span><span style=\"color: rgb(44,130,201)\"></span></p>",
+                                    "Body": "<p><span style=\"color: rgb(44,130,201)\">Issue Type: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_Service_Bus_Message_JSON')?['issueType']}</span><span style=\"color: rgb(44,130,201)\"></span><br>\n<span style=\"color: rgb(44,130,201)\">Issue Description: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_Service_Bus_Message_JSON')?['issueDescription']}</span><span style=\"color: rgb(44,130,201)\"></span><br>\n<span style=\"color: rgb(44,130,201)\">Service Now Ticket Number: </span><span style=\"color: rgb(44,130,201)\">@{variables('ServiceTicketNumber')}</span><span style=\"color: rgb(44,130,201)\"></span></p>",
                                     "Subject": "Citizen Image Uploaded to Blob Storage",
                                     "To": "shmulli@microsoft.com; rujabbar@microsoft.com; daghazal@microsoft.com"
                                 },
@@ -205,7 +216,13 @@
                                 },
                                 "method": "post",
                                 "path": "/v2/Mail"
-                            }
+                            },
+                            "runAfter": {
+                                "Create_Cosmos_DB_Document_for_Issue": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection"
                         }
                     },
                     "outputs": {}
