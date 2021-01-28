@@ -134,5 +134,11 @@
                 "Request_Source": "IbizaWebAppExtensionCreate"
             }
         }
-    ]
+    ],
+    "outputs": {
+        "key": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+        }
+    }
 }

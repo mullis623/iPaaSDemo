@@ -31,6 +31,9 @@
     },
     "apiManagementName": {
       "type": "string"
+    },
+    "appInsightsKey": {
+      "type": "string"
     }
   },
   "variables": {
@@ -93,6 +96,41 @@
           "properties": {
             "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <mock-response status-code=\"200\" content-type=\"application/json\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
             "format": "xml"
+          }
+        },
+        {
+          "type": "Microsoft.ApiManagement/service/loggers",
+          "apiVersion": "2020-06-01-preview",
+          "name": "[concat(variables('apiManagementServiceName'), '/logger')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]"
+          ],
+          "properties": {
+            "loggerType": "applicationInsights",
+            "description": "Application Insights integration",
+            "credentials": {
+              "instrumentationKey": "[parameters('appInsightsKey')]"
+            },
+            "isBuffered": true
+          }
+        },
+        {
+          "type": "Microsoft.ApiManagement/service/diagnostics",
+          "apiVersion": "2018-06-01-preview",
+            "name": "[concat(variables('apiManagementServiceName'), '/applicationinsights')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]",
+            "[resourceId('Microsoft.ApiManagement/service/loggers', variables('apiManagementServiceName'), 'logger')]"
+          ],
+          "properties": {
+            "alwaysLog": "allErrors",
+            "httpCorrelationProtocol": "Legacy",
+            "logClientIp": true,
+            "sampling": {
+              "samplingType": "fixed",
+              "percentage": 100
+            },
+            "loggerId": "[concat('/loggers/', 'logger')]"
           }
         }
       ]

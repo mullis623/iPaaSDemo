@@ -60,6 +60,9 @@
                     },
                     "adminEmail": {
                         "value": "[parameters('adminEmail')]"
+                    },
+                    "appInsightsKey": {
+                        "value": "[reference('AppServices').outputs.key.value]"
                     }
                 }
             }
