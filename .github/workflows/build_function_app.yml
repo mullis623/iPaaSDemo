@@ -21,10 +21,10 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: $BUILD_PATH
+      working-directory: $GITHUB_WORKSPACE/$BUILD_PATH
     - name: Build
       run: dotnet build --no-restore --configuration Release
-      working-directory: $BUILD_PATH
+      working-directory: $GITHUB_WORKSPACE/$BUILD_PATH
     - name: Package
       run: cd $ARCHIVE_PATH && zip $ARCHIVE_NAME *
     - name: Release
@@ -48,6 +48,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: $ARCHIVE_PATH
+        asset_path: $GITHUB_WORKSPACE/$ARCHIVE_PATH
         asset_name: $ARCHIVE_NAME
         asset_content_type: application/zip
