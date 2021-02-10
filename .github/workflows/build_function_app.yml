@@ -26,7 +26,7 @@ jobs:
         cd $BUILD_PATH
         dotnet build --configuration Release
     - name: Package
-      run: cd $ARCHIVE_PATH && zip $ARCHIVE_NAME *
+      run: cd $ARTIFACT_PATH && zip $ARTIFACT_NAME *
     - name: Release
       id: create_release
       uses: actions/create-release@v1
