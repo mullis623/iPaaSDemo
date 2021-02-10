@@ -1,4 +1,4 @@
-name: .NET
+name: Build Function App
 
 on:
   workflow_dispatch:
@@ -6,6 +6,7 @@ on:
 env:
   ARTIFACT_PATH: iPaas-Demo-Functions/bin/Release/netcoreapp3.1
   ARTIFACT_NAME: drop.zip
+  BUILD_PATH: iPaas-Demo-Functions
 
 jobs:
   build:
@@ -20,8 +21,10 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: $BUILD_PATH
     - name: Build
       run: dotnet build --no-restore --configuration Release
+      working-directory: $BUILD_PATH
     - name: Package
       run: cd $ARCHIVE_PATH && zip $ARCHIVE_NAME *
     - name: Release
