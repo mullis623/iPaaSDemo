@@ -20,7 +20,11 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: |
+        echo $GITHUB_WORKSPACE
+        echo $BUILD_PATH
+        echo $PWD
+        dotnet restore
       working-directory: $GITHUB_WORKSPACE/$BUILD_PATH
     - name: Build
       run: dotnet build --no-restore --configuration Release
