@@ -107,7 +107,7 @@
                         },
                         {
                             "name": "WEBSITE_RUN_FROM_PACKAGE",
-                            "value": "1"
+                            "value": "https://github.com/mullis623/iPaaSDemo/releases/download/refs%2Fheads%2Fmain/drop.zip"
                         }
                     ]
                 }
