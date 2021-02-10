@@ -25,7 +25,6 @@ jobs:
         echo $BUILD_PATH
         echo $PWD
         dotnet restore
-      working-directory: $GITHUB_WORKSPACE/$BUILD_PATH
     - name: Build
       run: dotnet build --no-restore --configuration Release
       working-directory: $GITHUB_WORKSPACE/$BUILD_PATH
