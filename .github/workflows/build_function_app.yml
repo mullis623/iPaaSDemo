@@ -7,6 +7,7 @@ env:
   ARTIFACT_PATH: iPaas-Demo-Functions/bin/Release/netcoreapp3.1
   ARTIFACT_NAME: drop.zip
   BUILD_PATH: iPaas-Demo-Functions
+  DOTNET_VERSION: '3.1'
 
 jobs:
   build:
@@ -18,7 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: $DOTNET_VERSION
     - name: Build
       run: |
         ls -l
