@@ -196,7 +196,7 @@
                                 "body": {
                                     "Body": "<p><span style=\"color: rgb(44,130,201)\">Issue Type: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_Service_Bus_Message_JSON')?['issueType']}</span><span style=\"color: rgb(44,130,201)\"></span><br>\n<span style=\"color: rgb(44,130,201)\">Issue Description: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_Service_Bus_Message_JSON')?['issueDescription']}</span><span style=\"color: rgb(44,130,201)\"></span><br>\n<span style=\"color: rgb(44,130,201)\">Service Now Ticket Number: </span><span style=\"color: rgb(44,130,201)\">@{body('Parse_ServiceNow_JSON_')?['ServiceTicketNo']}</span><span style=\"color: rgb(44,130,201)\"></span></p>",
                                     "Subject": "Citizen Image Uploaded to Blob Storage",
-                                    "To": "shmulli@microsoft.com; rujabbar@microsoft.com; daghazal@microsoft.com"
+                                    "To": "someone@example.org"
                                 },
                                 "host": {
                                     "connection": {
