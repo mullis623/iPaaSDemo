@@ -19,15 +19,337 @@
         },
         "apiManagementKey": {
             "type": "string"
+        },
+        "bingMapsKey": {
+            "type": "string"
         }
     },
     "variables": {
         "apiConnectionNameCosmosDb": "[concat('la-api-cosmos-', parameters('logicAppName'))]",
         "apiConnectionNameOffice365": "[concat('la-api-office365-', parameters('logicAppName'))]",
         "apiConnectionNameServiceBus": "[concat('la-api-servicebus-', parameters('logicAppName'))]",
+        "apiConnectionNameBingMaps": "[concat('la-api-bingmaps-', parameters('logicAppName'))]",
         "logicAppName": "[concat('la-', parameters('logicAppName'))]"
     },
     "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[concat(variables('logicAppName'), '-getAddress']",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameCosmosDb'))]",
+                "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameOffice365'))]",
+                "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameServiceBus'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "actions": {
+                        "Condition": {
+                            "actions": {
+                                "Response": {
+                                    "inputs": {
+                                        "body": "@body('Get_Address_From_Geo_Coordinates')?['address']?['formattedAddress']",
+                                        "statusCode": 200
+                                    },
+                                    "kind": "Http",
+                                    "runAfter": {},
+                                    "type": "Response"
+                                }
+                            },
+                            "else": {
+                                "actions": {
+                                    "Parse_Bing_Maps_Error_Response_JSON": {
+                                        "inputs": {
+                                            "content": "@body('Get_Address_From_Geo_Coordinates')",
+                                            "schema": {
+                                                "properties": {
+                                                    "authenticationResultCode": {
+                                                        "type": "string"
+                                                    },
+                                                    "brandLogoUri": {
+                                                        "type": "string"
+                                                    },
+                                                    "copyright": {
+                                                        "type": "string"
+                                                    },
+                                                    "errorDetails": {
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "resourceSets": {
+                                                        "type": "array"
+                                                    },
+                                                    "statusCode": {
+                                                        "type": "integer"
+                                                    },
+                                                    "statusDescription": {
+                                                        "type": "string"
+                                                    },
+                                                    "traceId": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "runAfter": {},
+                                        "type": "ParseJson"
+                                    },
+                                    "Response_2": {
+                                        "inputs": {
+                                            "body": "@body('Parse_Bing_Maps_Error_Response_JSON')?['errorDetails']",
+                                            "statusCode": "@body('Parse_Bing_Maps_Error_Response_JSON')?['statusCode']"
+                                        },
+                                        "kind": "Http",
+                                        "runAfter": {
+                                            "Parse_Bing_Maps_Error_Response_JSON": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Response"
+                                    }
+                                }
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "equals": [
+                                            "@empty(body('Parse_Bing_Maps_Response_JSON')?['name'])",
+                                            false
+                                        ]
+                                    }
+                                ]
+                            },
+                            "runAfter": {
+                                "Parse_Bing_Maps_Response_JSON": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "If"
+                        },
+                        "Get_Address_From_Geo_Coordinates": {
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['bingmaps']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/REST/v1/Locations/pointPlaceHolder",
+                                "queries": {
+                                    "include": true,
+                                    "includeNeighborhood": true,
+                                    "latitude": "@triggerBody()?['geoLatCoordinate']",
+                                    "longitude": "@triggerBody()?['geoLongCoordinate']"
+                                }
+                            },
+                            "runAfter": {},
+                            "type": "ApiConnection"
+                        },
+                        "Parse_Bing_Maps_Response_JSON": {
+                            "inputs": {
+                                "content": "@body('Get_Address_From_Geo_Coordinates')",
+                                "schema": {
+                                    "properties": {
+                                        "__type": {
+                                            "type": "string"
+                                        },
+                                        "address": {
+                                            "properties": {
+                                                "addressLine": {
+                                                    "type": "string"
+                                                },
+                                                "adminDistrict": {
+                                                    "type": "string"
+                                                },
+                                                "adminDistrict2": {
+                                                    "type": "string"
+                                                },
+                                                "countryRegion": {
+                                                    "type": "string"
+                                                },
+                                                "countryRegionIso2": {
+                                                    "type": "string"
+                                                },
+                                                "formattedAddress": {
+                                                    "type": "string"
+                                                },
+                                                "intersection": {
+                                                    "properties": {
+                                                        "baseStreet": {
+                                                            "type": "string"
+                                                        },
+                                                        "displayName": {
+                                                            "type": "string"
+                                                        },
+                                                        "intersectionType": {
+                                                            "type": "string"
+                                                        },
+                                                        "secondaryStreet1": {
+                                                            "type": "string"
+                                                        },
+                                                        "secondaryStreet2": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "locality": {
+                                                    "type": "string"
+                                                },
+                                                "neighborhood": {
+                                                    "type": "string"
+                                                },
+                                                "postalCode": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "bbox": {
+                                            "properties": {
+                                                "eastLongitude": {
+                                                    "type": "number"
+                                                },
+                                                "northLatitude": {
+                                                    "type": "number"
+                                                },
+                                                "southLatitude": {
+                                                    "type": "number"
+                                                },
+                                                "westLongitude": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "confidence": {
+                                            "type": "string"
+                                        },
+                                        "entityType": {
+                                            "type": "string"
+                                        },
+                                        "geocodePoints": {
+                                            "properties": {
+                                                "calculationMethod": {
+                                                    "type": "string"
+                                                },
+                                                "coordinates": {
+                                                    "properties": {
+                                                        "combined": {
+                                                            "type": "string"
+                                                        },
+                                                        "latitude": {
+                                                            "type": "number"
+                                                        },
+                                                        "longitude": {
+                                                            "type": "number"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "usageTypes": {
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": "array"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "matchCodes": {
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "point": {
+                                            "properties": {
+                                                "coordinates": {
+                                                    "properties": {
+                                                        "combined": {
+                                                            "type": "string"
+                                                        },
+                                                        "latitude": {
+                                                            "type": "number"
+                                                        },
+                                                        "longitude": {
+                                                            "type": "number"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "runAfter": {
+                                "Get_Address_From_Geo_Coordinates": [
+                                    "Succeeded",
+                                    "Failed"
+                                ]
+                            },
+                            "type": "ParseJson"
+                        }
+                    },
+                    "contentVersion": "1.0.0.0",
+                    "outputs": {},
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "inputs": {
+                                "schema": {
+                                    "properties": {
+                                        "geoLatCoordinate": {
+                                            "type": "string"
+                                        },
+                                        "geoLongCoordinate": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "kind": "Http",
+                            "type": "Request"
+                        }
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "bingmaps": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('apiConnectionNameBingMaps'))]",
+                                "connectionName": "bingmaps",
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/bingmaps')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
@@ -285,6 +607,21 @@
                 },
                 "api": {
                     "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/servicebus')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('apiConnectionNameBingMaps')]",
+            "location": "[resourceGroup().location]",
+            "kind": "V1",
+            "properties": {
+                "displayName": "BingMapsConnection",
+                "customParameterValues": {},
+                "parameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/bingmaps')]"
                 }
             }
         }
