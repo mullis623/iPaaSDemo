@@ -64,7 +64,7 @@
           ],
           "properties": {
             "format": "openapi-link",
-            "value": "https://pythondjangodemo.blob.core.windows.net/azuretemplates/apim.openapi.yaml",
+            "value": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/apim.openapi.yaml",
             "path": "iPaaS-Demo-Functions",
             "displayName": "iPaaS-Demo-Functions",
             "protocols": [
