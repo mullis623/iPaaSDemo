@@ -19,9 +19,6 @@
         },
         "apiManagementKey": {
             "type": "string"
-        },
-        "bingMapsKey": {
-            "type": "string"
         }
     },
     "variables": {
