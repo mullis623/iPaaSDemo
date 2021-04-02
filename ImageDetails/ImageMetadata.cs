@@ -10,6 +10,18 @@ namespace ImageDetails
             set;
         }
 
+        public string serviceTicketNo
+        {
+            get;
+            set;
+        }
+
+        public AddressDetails addressDetails
+        {
+            get;
+            set;
+        }
+
         public string uploadedFileName
         {
             get;
