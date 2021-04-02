@@ -10,9 +10,14 @@
         "ImageContainerName": "images",
         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
         "AzureWebJobs.ProcessUploadedImage.Disabled": "true",
-        "CustomVisionRootUrl": "https://eastus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/3d81746b-d0f3-4216-a6f1-024c25f2c070/classify/iterations/",
-        "CustomVisionIteration": "Iteration7",
-        "CustomVisionPredictionKey": "124c2ec410304f499ee39fe957d5afb9",
-        "ServiceBusConnection": "EnterLocallyButDoNotCommit-Needs to be Set as Application Setting in Azure Portal"
+        "AzureWebJobs.ProcessValidImage.Disabled": "true",
+        "AzureWebJobs.ValidateImage.Disabled": "true",
+        "CustomVisionRootUrl": "Enter in Function Configuration App Settings",
+        "CustomVisionIteration": "Enter in Function Configuration App Settings",
+        "CustomVisionPredictionKey": "Enter in Function Configuration App Settings",
+        "ServiceBusConnection": "Enter in Function Configuration App Settings",
+        "TopicServiceBusConnection": "Enter in Function Configuration App Settings",
+        "ServiceBusTopic": "citizenreportedissue",
+        "CosmosDBConnection": "Enter in Function Configuration App Settings"
     }
 }
