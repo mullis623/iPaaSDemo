@@ -1,0 +1,149 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminEmail": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adminName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sku": {
+      "type": "string",
+      "allowedValues": [
+        "Developer",
+        "Standard",
+        "Premium"
+      ],
+      "defaultValue": "Developer",
+      "metadata": {
+        "description": "The pricing tier of this API Management service"
+      }
+    },
+    "skuCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "The instance size of this API Management service."
+      }
+    },
+    "apiManagementName": {
+      "type": "string"
+    },
+    "appInsightsKey": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "apiManagementServiceName": "[concat('api-', parameters('apiManagementName'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-03-01",
+      "name": "[variables('apiManagementServiceName')]",
+      "type": "Microsoft.ApiManagement/service",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "sku": {
+        "name": "[parameters('sku')]",
+        "capacity": "[parameters('skuCount')]"
+      },
+      "properties": {
+        "publisherEmail": "[parameters('adminEmail')]",
+        "publisherName": "[parameters('adminName')]"
+      },
+      "resources": [
+        {
+          "apiVersion": "2020-06-01-preview",
+          "type": "apis",
+          "name": "iPaaS-Demo-Functions",
+          "dependsOn": [
+            "[concat('Microsoft.ApiManagement/service/', variables('apiManagementServiceName'))]"
+          ],
+          "properties": {
+            "format": "openapi-link",
+            "value": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/apim.openapi.yaml",
+            "path": "iPaaS-Demo-Functions",
+            "displayName": "iPaaS-Demo-Functions",
+            "protocols": [
+              "HTTPS"
+            ]
+          }
+        },
+        {
+          "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+          "apiVersion": "2020-06-01-preview",
+          "name": "[concat(variables('apiManagementServiceName'), '/iPaaS-Demo-Functions/new-request/policy')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementServiceName'), 'iPaaS-Demo-Functions')]",
+            "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]"
+          ],
+          "properties": {
+            "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <return-response>\r\n      <set-status code=\"200\" reason=\"OK\" />\r\n      <set-header name=\"Content-Type\" exists-action=\"override\">\r\n        <value>application/json</value>\r\n      </set-header>\r\n      <set-body>@(\"{\\\"ServiceTicketNo\\\": \\\"\" + System.Guid.NewGuid().ToString() + \"\\\", \\\"status\\\": \\\"OK\\\"}\")</set-body>\r\n    </return-response>\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+            "format": "xml"
+          }
+        },
+        {
+          "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+          "apiVersion": "2020-06-01-preview",
+          "name": "[concat(variables('apiManagementServiceName'), '/iPaaS-Demo-Functions/get-request/policy')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementServiceName'), 'iPaaS-Demo-Functions')]",
+            "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]"
+          ],
+          "properties": {
+            "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <mock-response status-code=\"200\" content-type=\"application/json\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+            "format": "xml"
+          }
+        },
+        {
+          "type": "Microsoft.ApiManagement/service/loggers",
+          "apiVersion": "2020-06-01-preview",
+          "name": "[concat(variables('apiManagementServiceName'), '/logger')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]"
+          ],
+          "properties": {
+            "loggerType": "applicationInsights",
+            "description": "Application Insights integration",
+            "credentials": {
+              "instrumentationKey": "[parameters('appInsightsKey')]"
+            },
+            "isBuffered": true
+          }
+        },
+        {
+          "type": "Microsoft.ApiManagement/service/diagnostics",
+          "apiVersion": "2018-06-01-preview",
+            "name": "[concat(variables('apiManagementServiceName'), '/applicationinsights')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]",
+            "[resourceId('Microsoft.ApiManagement/service/loggers', variables('apiManagementServiceName'), 'logger')]"
+          ],
+          "properties": {
+            "alwaysLog": "allErrors",
+            "httpCorrelationProtocol": "Legacy",
+            "logClientIp": true,
+            "sampling": {
+              "samplingType": "fixed",
+              "percentage": 100
+            },
+            "loggerId": "[concat('/loggers/', 'logger')]"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "url": {
+      "type": "string",
+      "value": "[concat('https://', variables('apiManagementServiceName'), '.azure-api.net/iPaaS-Demo-Functions/')]"
+    },
+    "key": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ApiManagement/service/subscriptions', variables('apiManagementServiceName'), 'master'), '2019-01-01').primaryKey]"
+    }
+  }
+}

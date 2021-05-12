@@ -1,0 +1,228 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "allowedValues": [
+                "dev",
+                "test",
+                "prod"
+            ],
+            "metadata": {
+                "description": "Name of the environment for Azure resource naming purposes"
+            }
+        },
+        "resourcePrefix": {
+            "type": "string",
+            "minLength": 2,
+            "metadata": {
+                "description": "Unique prefix to prepend to Azure resource names"
+            }
+        },
+        "adminEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "The email address of the owner of the service"
+            }
+        },
+        "adminName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the owner of the service"
+            }
+        }
+    },
+    "variables": {
+        "resourceName": "[concat(parameters('resourcePrefix'), '-ipaas-', parameters('environment'))]",
+        "imageArchiveContainer": "imagearchive",
+        "imageMetadataContainer": "imagemetadata",
+        "processedImageContainer": "processedimages",
+        "imageContainer": "images"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "ApiManagement",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/api-management.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "apiManagementName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "adminName": {
+                        "value": "[parameters('adminName')]"
+                    },
+                    "adminEmail": {
+                        "value": "[parameters('adminEmail')]"
+                    },
+                    "appInsightsKey": {
+                        "value": "[reference('AppServices').outputs.key.value]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "AppServices",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'Storage')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/app-services.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServiceName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "imageArchiveContainer": {
+                        "value": "[variables('imageArchiveContainer')]"
+                    },
+                    "imageMetadataContainer": {
+                        "value": "[variables('imageMetadataContainer')]"
+                    },
+                    "processedImageContainer": {
+                        "value": "[variables('processedImageContainer')]"
+                    },
+                    "imageContainer": {
+                        "value": "[variables('imageContainer')]"
+                    },
+                    "serviceBusConnectionString": {
+                        "value": "[reference('ServiceBus').outputs.connectionString.value]"
+                    },
+                    "storageAccountConnectionString": {
+                        "value": "[reference('Storage').outputs.connectionString.value]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "CognitiveServices",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/cognitive-services.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "cognitiveServicesName": {
+                        "value": "[variables('resourceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "CosmosDb",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/cosmosdb.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "cosmosDbAccountName": {
+                        "value": "[variables('resourceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "LogicApps",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'CosmosDb')]",
+                "[resourceId('Microsoft.Resources/deployments', 'ServiceBus')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/logic-apps.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "logicAppName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "cosmosDbAccountName": {
+                        "value": "[variables('resourceName')]"
+                    },
+                    "cosmosDbPrimaryMasterKey": {
+                        "value": "[reference('CosmosDb').outputs.primaryMasterKey.value]"
+                    },
+                    "serviceBusConnectionString": {
+                        "value": "[reference('ServiceBus').outputs.connectionString.value]"
+                    },
+                    "apiManagementUrl": {
+                        "value": "[reference('ApiManagement').outputs.url.value]"
+                    },
+                    "apiManagementKey": {
+                        "value": "[reference('ApiManagement').outputs.key.value]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "ServiceBus",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/service-bus.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "serviceBusNamespace": {
+                        "value": "[variables('resourceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "Storage",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/storage.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storageAccountName": {
+                        "value": "[replace(variables('resourceName'), '-', '')]"
+                    },
+                    "imageArchiveContainer": {
+                        "value": "[variables('imageArchiveContainer')]"
+                    },
+                    "imageMetadataContainer": {
+                        "value": "[variables('imageMetadataContainer')]"
+                    },
+                    "processedImageContainer": {
+                        "value": "[variables('processedImageContainer')]"
+                    },
+                    "imageContainer": {
+                        "value": "[variables('imageContainer')]"
+                    }
+                }
+            }
+        }
+    ]
+}

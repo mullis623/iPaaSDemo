@@ -1,0 +1,62 @@
+openapi: 3.0.1
+info:
+  title: iPaaS-Demo-Functions
+  description: Import from "iPaaS-Demo-Functions" Function App
+  version: "1.0"
+servers:
+  - url: https://ipaas-demo-functions-apim.azure-api.net/iPaaS-Demo-Functions
+paths:
+  /ValidateImage:
+    post:
+      summary: ValidateImage
+      operationId: post-validateimage
+      responses:
+        "200":
+          description: OK
+  /ProcessValidImage:
+    post:
+      summary: ProcessValidImage
+      operationId: post-processvalidimage
+      responses:
+        "200":
+          description: OK
+  /servicerequest/new:
+    post:
+      summary: Create New Request
+      operationId: new-request
+      requestBody:
+        content:
+          application/json:
+            example:
+              id: asfsafs
+              itemType: Pothole
+              geoLocationX: "2323"
+              geoLocationY: "444"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              example:
+                ServiceTicketNo: 8de5d6ed-edd2-4ff7-a94b-280521630e29
+                status: OK
+  /servicerequest:
+    get:
+      summary: Get Request
+      operationId: get-request
+      responses:
+        "200":
+          description: OK
+components:
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      name: Ocp-Apim-Subscription-Key
+      in: header
+    apiKeyQuery:
+      type: apiKey
+      name: subscription-key
+      in: query
+security:
+  - apiKeyHeader: []
+  - apiKeyQuery: []
