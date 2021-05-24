@@ -11,5 +11,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ImageDetails\ImageDetails.csproj" />
   </ItemGroup>
-
 </Project>

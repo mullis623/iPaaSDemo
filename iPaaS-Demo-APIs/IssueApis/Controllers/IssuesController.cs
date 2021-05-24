@@ -50,6 +50,9 @@ namespace IssueApis.Controllers
                 //.WithParameter("@cId", _cosmosContainerId);
 
             List<ImageMetadata> results = new List<ImageMetadata>();
+
+            _logger.LogInformation("Cosmos Endpoint: " + _cosmosEndpoint);
+
             using (CosmosClient csmsClient = new CosmosClient(_cosmosEndpoint, _cosmosReadKey))
             {
                 Container container = csmsClient.GetContainer(_cosmosDBId, _cosmosContainerId);
