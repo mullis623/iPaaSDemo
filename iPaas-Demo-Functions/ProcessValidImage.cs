@@ -19,7 +19,7 @@ namespace iPaas_Demo_Functions
     public static class ProcessValidImage
     {
         [FunctionName("ProcessValidImage")]
-        [return: ServiceBus("validimagequeue", Connection = "ServiceBusConnection")]
+        [return: ServiceBus("fundingallocationqueue", Connection = "ServiceBusConnection")]
         //public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
         public static async Task<ImageMetadata> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
         {
@@ -100,6 +100,9 @@ namespace iPaas_Demo_Functions
                     imageData.geoLongCoordinate = geoLongCoordinate ?? data?.geoLongCoordinate;
                     imageData.uploadUserName = uploadUserName ?? data?.uploadUserName;
 
+                    imageData.issueComplexity = getIssueComplexity(blobUrl, issueType);
+                    imageData.issueUrgency = getIssueUrgency(blobUrl, issueType);
+
                     string metaJson = System.Text.Json.JsonSerializer.Serialize<ImageMetadata>(imageData);
                     await metaBlob.UploadTextAsync(metaJson);
 
@@ -120,5 +123,24 @@ namespace iPaas_Demo_Functions
 
             //return new OkObjectResult(responseMessage);
         }
+
+        public static String getIssueComplexity(String url, String type)
+        {
+            string[] issueComplexities = {"simple", "normal", "complex"};
+            Random random = new Random();
+            int randomNum = random.Next(0, issueComplexities.Length);
+            string complexity = issueComplexities[randomNum];
+            return complexity;
+        }
+
+        public static String getIssueUrgency(String url, String type)
+        {
+            string[] issueUrgencies = {"low", "medium", "high", "critical"};
+            Random random = new Random();
+            int randomNum = random.Next(0, issueUrgencies.Length);
+            string urgency = issueUrgencies[randomNum];
+            return urgency;
+        }
     }
+
 }
