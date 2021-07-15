@@ -46,6 +46,12 @@ namespace ImageDetails
             set;
         }
 
+        public string neighborhood
+        {
+            get;
+            set;
+        }
+
         public string postalCode
         {
             get;

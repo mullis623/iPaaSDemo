@@ -6,4 +6,4 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
   ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "IssueApis.dll"]
+ENTRYPOINT ["dotnet", "IssueReadApis.dll"]

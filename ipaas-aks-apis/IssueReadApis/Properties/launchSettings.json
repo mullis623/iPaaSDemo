@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "IssueApis": {
+    "IssueReadApis": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,
