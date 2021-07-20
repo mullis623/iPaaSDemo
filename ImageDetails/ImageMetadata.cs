@@ -82,6 +82,18 @@ namespace ImageDetails
             set;
         }
 
+        public string issueComplexity
+        {
+            get;
+            set;
+        }
+
+        public string issueUrgency
+        {
+            get;
+            set;
+        }
+
         public bool isValidatedIssue
         {
             get;
