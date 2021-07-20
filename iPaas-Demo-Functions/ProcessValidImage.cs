@@ -19,9 +19,12 @@ namespace iPaas_Demo_Functions
     public static class ProcessValidImage
     {
         [FunctionName("ProcessValidImage")]
-        [return: ServiceBus("fundingallocationqueue", Connection = "ServiceBusConnection")]
+        //[return: ServiceBus("fundingallocationqueue", Connection = "ServiceBusConnection")]
         //public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
-        public static async Task<ImageMetadata> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, 
+        [ServiceBus("validimagequeue", Connection = "ServiceBusConnection")] IAsyncCollector<dynamic> logicAppOutputQueue,
+        [ServiceBus("fundingallocationqueue", Connection = "ServiceBusConnection")] IAsyncCollector<dynamic> bizTalkOutputQueue,
+        ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
@@ -31,10 +34,13 @@ namespace iPaas_Demo_Functions
             string geoLatCoordinate = req.Query["geoLatCoordinate"];
             string geoLongCoordinate = req.Query["geoLongCoordinate"];
             string uploadUserName = req.Query["uploadUserName"];
+            string sendToBizTalk = req.Query["sendToBizTalk"];
             
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             id = id ?? data?.id;
+            sendToBizTalk = sendToBizTalk ?? data?.sendToBizTalk;
+
             //issueType = issueType ?? data?.issueType;
             //issueDescription = issueDescription ?? data?.issueDescription;
             //geoLatCoordinate = geoLatCoordinate ?? data?.geoLatCoordinate;
@@ -118,10 +124,20 @@ namespace iPaas_Demo_Functions
                 log.LogInformation($"Error! Something went wrong: {ex.Message}");
             }
 
-            //string responseMessage = "Ok";
-            return imageData;
+            if(sendToBizTalk == "true")
+            {
+                log.LogInformation("Sending to BizTalk FundingAllocationQueue");
+                await bizTalkOutputQueue.AddAsync(imageData);
+            }
+            else
+            {
+                log.LogInformation("Sending to LogicApp ValidImageQueue");
+                await logicAppOutputQueue.AddAsync(imageData);
+            }
 
-            //return new OkObjectResult(responseMessage);
+            string responseMessage = "Ok";
+            //return imageData;
+            return new OkObjectResult(responseMessage);
         }
 
         public static String getIssueComplexity(String url, String type)
