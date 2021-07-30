@@ -41,7 +41,7 @@ jobs:
           dotnet restore
           popd
 
-      - name: 'Resolve Project Dependencies Using Dotnet'
+      - name: 'Publish Project to Output Directory'
         shell: bash
         run: |
           pushd './${{ env.PACKAGE_PATH }}'
@@ -58,5 +58,5 @@ jobs:
       - name: Push Container to ACR
         working-directory: ${{ env.PACKAGE_PATH }} 
         run: |
-          docker build . -t ${{env.CONTAINER_REGISTRY}}/${{env.image_name}}:${{ github.sha }}
-          docker push ${{env.CONTAINER_REGISTRY}}/${{env.image_name}}:${{ github.sha }}
+          docker build . -t ${{env.ACR_LOGIN_SERVER}}/${{env.image_name}}:${{ github.sha }}
+          docker push ${{env.ACR_LOGIN_SERVER}}/${{env.image_name}}:${{ github.sha }}
