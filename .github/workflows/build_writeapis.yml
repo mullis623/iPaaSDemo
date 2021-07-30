@@ -52,8 +52,8 @@ jobs:
         uses: azure/docker-login@v1
         with:
           login-server: ${{ env.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.AZURE_CREDENTIALS }}.clientId
-          password: ${{ secrets.AZURE_CREDENTIALS }}.clientSecret
+          username: ${{ secrets.AZURE_CREDENTIALS.clientId }}
+          password: ${{ secrets.AZURE_CREDENTIALS.clientSecret }}
 
       - name: Push Container to ACR
         working-directory: ${{ env.PACKAGE_PATH }} 
