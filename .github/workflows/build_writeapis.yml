@@ -56,9 +56,7 @@ jobs:
           password: ${{ secrets.AZURE_CREDENTIALS }}.clientSecret
 
       - name: Push Container to ACR
-        working-directory: src
+        working-directory: ${{ env.PACKAGE_PATH }} 
         run: |
-          pushd './${{ env.PACKAGE_PATH }}'
           docker build . -t ${{env.CONTAINER_REGISTRY}}/${{env.image_name}}:${{ github.sha }}
           docker push ${{env.CONTAINER_REGISTRY}}/${{env.image_name}}:${{ github.sha }}
-          popd
