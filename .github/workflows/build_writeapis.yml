@@ -49,5 +49,5 @@ jobs:
       - name: Push Container to ACR
         working-directory: ${{ env.PACKAGE_PATH }} 
         run: |
-          docker build . -t ${{env.ACR_LOGIN_SERVER}}/${{env.image_name}}:${{ github.sha::8 }}
-          docker push ${{env.ACR_LOGIN_SERVER}}/${{env.image_name}}:${{ github.sha::8 }}
+          docker build . -t ${{env.ACR_LOGIN_SERVER}}/${{env.image_name}}:${{ github.sha }}
+          docker push ${{env.ACR_LOGIN_SERVER}}/${{env.image_name}}:${{ github.sha }}
