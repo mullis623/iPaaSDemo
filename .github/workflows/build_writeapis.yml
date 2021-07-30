@@ -1,0 +1,64 @@
+name: Build/Push WriteApis Container
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
+on:
+  push:
+    branches: 
+    - development
+    #paths:
+    #- 'ipaas-aks-apis/IssueWriteApis/**'
+
+env:
+  ACR_LOGIN_SERVER: ipaasacr.azurecr.io
+  PACKAGE_PATH: 'ipaas-aks-apis/IssueWriteApis'
+  DOTNET_VERSION: '5.0'
+  image_name: 'ipaas-issue-write-apis'
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 'Resolve Project Dependencies Using Dotnet'
+        shell: bash
+        run: |
+          pushd './${{ env.PACKAGE_PATH }}'
+          dotnet restore
+          popd
+
+      - name: 'Resolve Project Dependencies Using Dotnet'
+        shell: bash
+        run: |
+          pushd './${{ env.PACKAGE_PATH }}'
+          dotnet publish --configuration Release --output bin/publish
+          popd
+          
+      - name: 'Login to ACR'
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.AZURE_CREDENTIALS }}.clientId
+          password: ${{ secrets.AZURE_CREDENTIALS }}.clientSecret
+
+      - name: Push Container to ACR
+        working-directory: src
+        run: |
+          pushd './${{ env.PACKAGE_PATH }}'
+          docker build . -t ${{env.CONTAINER_REGISTRY}}/${{env.image_name}}:${{ github.sha }}
+          docker push ${{env.CONTAINER_REGISTRY}}/${{env.image_name}}:${{ github.sha }}
+          popd
