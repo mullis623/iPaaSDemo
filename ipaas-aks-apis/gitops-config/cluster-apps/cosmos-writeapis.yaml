@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cosmosdb-issue-writeapis
+  namespace: apis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cosmosdb-issue-writeapis
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: cosmosdb-issue-writeapis
+        aadpodidbinding: azure-pod-identity-binding-selector
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        kubernetes.io/os: linux
+      containers:
+      - name: cosmosdb-issue-writeapis
+        image: ipaasacr.azurecr.io/ipaas-issue-writeapis:v1.0
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "1000m"
+        env:
+        - name: CosmosDBContainerId
+          valueFrom:
+            secretKeyRef:
+              name: cosmos-db-container-id
+              key: containerkey
+        - name: CosmosDBEndpoint
+          valueFrom:
+            secretKeyRef:
+              name: cosmos-db-endpoint
+              key: endpointkey
+        - name: CosmosDBId
+          valueFrom:
+            secretKeyRef:
+              name: cosmos-db-id
+              key: dbkey
+        - name: CosmosDBReadOnlyKey
+          valueFrom:
+            secretKeyRef:
+              name: cosmos-db-readonly-key
+              key: readonlykey
+        - name: CosmosDBWriteKey
+          valueFrom:
+            secretKeyRef:
+              name: cosmos-db-write-key
+              key: writekey
+        volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-ipaasdemokv"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cosmosdb-issue-writeapis-svc
+  namespace: apis
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: cosmosdb-issue-writeapis

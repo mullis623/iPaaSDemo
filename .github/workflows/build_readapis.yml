@@ -49,5 +49,16 @@ jobs:
       - name: Push Container to ACR
         working-directory: ${{ env.PACKAGE_PATH }} 
         run: |
-          docker build . -t ${{env.ACR_LOGIN_SERVER}}/${{env.image_name}}:${{ github.sha }}
-          docker push ${{env.ACR_LOGIN_SERVER}}/${{env.image_name}}:${{ github.sha }}
+          docker build . -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.image_name }}:${{ github.sha }}
+          docker push ${{ env.ACR_LOGIN_SERVER }}/${{ env.image_name }}:${{ github.sha }}
+
+      - name: Trigger Workflow(s) for updating GitOps Config with new Image Name 
+        run: |
+            $eventType = "update-image-name"
+            $fileToUpdate = "cosmos-readapis.yaml"
+            $imageName = "${{ env.ACR_LOGIN_SERVER }}/${{ env.image_name }}:${{ github.sha }}"
+            $repoName = "iPaaSGitOps"
+            $payload = "{`"event_type`":`"$eventType`",`"client_payload`":{`"fileToUpdate`":`"$fileToUpdate`",`"imageName`":`"$imageName`"}}" | ConvertTo-Json
+            
+            curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/mullis623/$repoName/dispatches -d $payload
+        shell: pwsh
