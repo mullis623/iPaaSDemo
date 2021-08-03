@@ -4,8 +4,8 @@ on:
   push:
     branches: 
     - development
-    #paths:
-    #- 'ipaas-aks-apis/IssueReadApis/**'
+    paths:
+    - 'ipaas-aks-apis/IssueReadApis/**'
 
 env:
   ACR_LOGIN_SERVER: ipaasacr.azurecr.io
