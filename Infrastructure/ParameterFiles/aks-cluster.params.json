@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "aksSettings": {
+            "value": {
+                "Name": "",
+                "dnsPrefix": "",
+                "nodeSize": "Standard_DS2_v2",                
+                "nodeCount": 2,
+                "agentPoolType": "VirtualMachineScaleSets",
+                "agentPoolMode": "System",
+                "enableRBAC": true,
+                "enableAADRBAC": false,
+                "adminGroupObjectIDs": [
+
+                ],
+                "enablePrivateCluster": false,
+                "enableHttpApplicationRouting": false,
+                "enableAzurePolicy": false,
+                "enableOmsAgent": true,
+                "omsWorkspaceId": ""
+            }
+        },
+        "kubernetesVersion": {
+            "value": "1.19.9"
+        },
+        "networkPlugin": {
+            "value": "kubenet"
+        },
+        "networkPolicy": {
+            "value": "calico"
+        },
+        "loadBalancerSku": {
+            "value": "standard"
+        },
+        "acrSettings": {
+            "value": {
+                "Name": "",
+                "adminUserEnabled": false,
+                "publicNetworkAccess": "Enabled",                
+                "zoneRedundancy": "Disabled",
+                "anonPullEnabled": false,
+                "networkRuleBypassOption": ""
+            }
+        },
+        "acrSkuName": {
+            "value": "Basic"
+        },
+        "aks_acr_guid": {
+            "value": ""
+        },
+        "la_aks_guid": {
+            "value": ""
+        },
+        "laWorkspaceName": {
+            "value": ""
+        }
+    }
+}

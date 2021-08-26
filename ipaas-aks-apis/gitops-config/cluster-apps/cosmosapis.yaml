@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cosmosdb-issue-apis
+  namespace: apis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cosmosdb-issue-apis
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: cosmosdb-issue-apis
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        kubernetes.io/os: linux
+      containers:
+      - name: cosmosdb-issue-apis
+        image: ipaasacr.azurecr.io/ipaas-issue-apis:v0.1
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "1000m"
+        env:
+        - name: REDIS
+          value: "azure-vote-back"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cosmosdb-issue-apis
+  namespace: apis
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: cosmosdb-issue-apis

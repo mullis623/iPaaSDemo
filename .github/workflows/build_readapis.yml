@@ -1,0 +1,64 @@
+name: Build/Push ReadApis Container
+
+on:
+  push:
+    branches: 
+    - development
+    paths:
+    - 'ipaas-aks-apis/IssueReadApis/**'
+
+env:
+  ACR_LOGIN_SERVER: ipaasacr.azurecr.io
+  PACKAGE_PATH: 'ipaas-aks-apis/IssueReadApis'
+  DOTNET_VERSION: '5.0'
+  image_name: 'ipaas-issue-readapis'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 'Resolve Project Dependencies Using Dotnet'
+        shell: bash
+        run: |
+          pushd './${{ env.PACKAGE_PATH }}'
+          dotnet restore
+          popd
+
+      - name: 'Publish Project to Output Directory'
+        shell: bash
+        run: |
+          pushd './${{ env.PACKAGE_PATH }}'
+          dotnet publish --configuration Release --output bin/publish
+          popd
+          
+      - name: 'Login to ACR'
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.SPN_CLIENTID }}
+          password: ${{ secrets.SPN_CLIENTSECRET }}
+
+      - name: Push Container to ACR
+        working-directory: ${{ env.PACKAGE_PATH }} 
+        run: |
+          docker build . -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.image_name }}:${{ github.sha }}
+          docker push ${{ env.ACR_LOGIN_SERVER }}/${{ env.image_name }}:${{ github.sha }}
+
+      - name: Trigger Workflow(s) for updating GitOps Config with new Image Name 
+        run: |
+            $eventType = "update-image-name"
+            $fileToUpdate = "cosmos-readapis.yaml"
+            $imageName = "${{ env.ACR_LOGIN_SERVER }}/${{ env.image_name }}:${{ github.sha }}"
+            $repoName = "iPaaSGitOps"
+            $payload = "{`"event_type`":`"$eventType`",`"client_payload`":{`"fileToUpdate`":`"$fileToUpdate`",`"imageName`":`"$imageName`"}}" | ConvertTo-Json
+            
+            curl -H "Authorization: token ${{ secrets.REPO_DISPATCH_TOKEN }}" https://api.github.com/repos/mullis623/$repoName/dispatches -d $payload
+        shell: pwsh

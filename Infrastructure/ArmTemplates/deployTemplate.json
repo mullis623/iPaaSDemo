@@ -48,7 +48,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/api-management.json",
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/Infrastructure/ArmTemplates/api-management.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -77,7 +77,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/app-services.json",
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/Infrastructure/ArmTemplates/app-services.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -115,7 +115,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/cognitive-services.json",
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/Infrastructure/ArmTemplates/cognitive-services.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -132,7 +132,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/cosmosdb.json",
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/Infrastructure/ArmTemplates/cosmosdb.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -153,7 +153,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/logic-apps.json",
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/Infrastructure/ArmTemplates/logic-apps.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -185,7 +185,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/service-bus.json",
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/Infrastructure/ArmTemplates/service-bus.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -202,7 +202,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/ArmTemplates/storage.json",
+                    "uri": "https://raw.githubusercontent.com/mullis623/iPaaSDemo/main/Infrastructure/ArmTemplates/storage.json",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
