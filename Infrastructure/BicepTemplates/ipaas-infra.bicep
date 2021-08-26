@@ -33,6 +33,7 @@ module aksCluster 'modules/aks.bicep' = {
     dnsPrefix: aksSettings.dnsPrefix
     aksNodeRGName: aksSettings.aksNodeRGName
     enableRBAC: aksSettings.enableRBAC
+    enableAADRBAC: aksSettings.enableAADRBAC
     enableManagedAAD: aksSettings.enableManagedAAD
     adminGroupObjectIDs: aksSettings.adminGroupObjectIDs
     enablePrivateCluster: aksSettings.enablePrivateCluster

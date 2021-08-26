@@ -11,6 +11,7 @@
                 "agentPoolType": "VirtualMachineScaleSets",
                 "agentPoolMode": "System",
                 "enableRBAC": true,
+                "enableAADRBAC": false,
                 "adminGroupObjectIDs": [
 
                 ],

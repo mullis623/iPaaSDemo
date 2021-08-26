@@ -23,6 +23,9 @@ param dnsPrefix string
 @description('Whether to enable Kubernetes Role-Based Access Control.')
 param enableRBAC bool = false
 
+@description('Whether to enable Azure RBAC for Kubernetes authorization.')
+param enableAADRBAC bool = false
+
 @description('Whether to enable managed AAD.')
 param enableManagedAAD bool = false
 
@@ -97,6 +100,7 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2021-02-01' = {
     }
     aadProfile: {
       managed: enableManagedAAD
+      enableAzureRBAC: enableAADRBAC
       adminGroupObjectIDs: adminGroupObjectIDs
     }
     apiServerAccessProfile: {
