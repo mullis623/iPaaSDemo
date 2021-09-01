@@ -1,0 +1,245 @@
+﻿#if __DESIGNER_DATA
+#error Do not define __DESIGNER_DATA.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<om:MetaModel MajorVersion="1" MinorVersion="3" Core="2b131234-7959-458d-834f-2dc0769ce683" ScheduleModel="66366196-361d-448d-976f-cab5e87496d2" xmlns:om="http://schemas.microsoft.com/BizTalk/2003/DesignerData">
+    <om:Element Type="Module" OID="93acd41a-bfba-472f-8075-d87ff30c3090" LowerBound="1.1" HigherBound="66.1">
+        <om:Property Name="ReportToAnalyst" Value="True" />
+        <om:Property Name="Name" Value="GetProjectFundingAccount" />
+        <om:Property Name="Signal" Value="False" />
+        <om:Element Type="PortType" OID="98811d8f-3e2d-4b90-9032-8f04ad52aeda" ParentLink="Module_PortType" LowerBound="4.1" HigherBound="11.1">
+            <om:Property Name="Synchronous" Value="False" />
+            <om:Property Name="TypeModifier" Value="Internal" />
+            <om:Property Name="ReportToAnalyst" Value="True" />
+            <om:Property Name="Name" Value="PortType_FundingAcctReq" />
+            <om:Property Name="Signal" Value="False" />
+            <om:Element Type="OperationDeclaration" OID="94767212-a9e7-4b46-b6f6-8e2f165d204b" ParentLink="PortType_OperationDeclaration" LowerBound="6.1" HigherBound="10.1">
+                <om:Property Name="OperationType" Value="OneWay" />
+                <om:Property Name="ReportToAnalyst" Value="True" />
+                <om:Property Name="Name" Value="Operation_1" />
+                <om:Property Name="Signal" Value="False" />
+                <om:Element Type="MessageRef" OID="e4ba2872-bd88-432f-9379-8c174a5de649" ParentLink="OperationDeclaration_RequestMessageRef" LowerBound="8.13" HigherBound="8.38">
+                    <om:Property Name="Ref" Value="GetProjectFundingAccount.CityOpsFundingInfoRequest" />
+                    <om:Property Name="ReportToAnalyst" Value="True" />
+                    <om:Property Name="Name" Value="Request" />
+                    <om:Property Name="Signal" Value="False" />
+                </om:Element>
+            </om:Element>
+        </om:Element>
+        <om:Element Type="PortType" OID="b8dc6e8f-7f11-442c-9987-20075b4537d9" ParentLink="Module_PortType" LowerBound="11.1" HigherBound="18.1">
+            <om:Property Name="Synchronous" Value="False" />
+            <om:Property Name="TypeModifier" Value="Internal" />
+            <om:Property Name="ReportToAnalyst" Value="True" />
+            <om:Property Name="Name" Value="PortType_SendFundingAcctResp" />
+            <om:Property Name="Signal" Value="False" />
+            <om:Element Type="OperationDeclaration" OID="34d1dcef-319a-4838-999e-2c520aeefcf5" ParentLink="PortType_OperationDeclaration" LowerBound="13.1" HigherBound="17.1">
+                <om:Property Name="OperationType" Value="OneWay" />
+                <om:Property Name="ReportToAnalyst" Value="True" />
+                <om:Property Name="Name" Value="Operation_1" />
+                <om:Property Name="Signal" Value="False" />
+                <om:Element Type="MessageRef" OID="2e1201ab-661a-4325-9fd4-3da00f29cd45" ParentLink="OperationDeclaration_RequestMessageRef" LowerBound="15.13" HigherBound="15.39">
+                    <om:Property Name="Ref" Value="GetProjectFundingAccount.CityOpsFundingInfoResponse" />
+                    <om:Property Name="ReportToAnalyst" Value="True" />
+                    <om:Property Name="Name" Value="Request" />
+                    <om:Property Name="Signal" Value="False" />
+                </om:Element>
+            </om:Element>
+        </om:Element>
+        <om:Element Type="ServiceDeclaration" OID="79f399c2-6907-474b-9bca-8aaa542d3f97" ParentLink="Module_ServiceDeclaration" LowerBound="18.1" HigherBound="65.1">
+            <om:Property Name="InitializedTransactionType" Value="False" />
+            <om:Property Name="IsInvokable" Value="False" />
+            <om:Property Name="TypeModifier" Value="Internal" />
+            <om:Property Name="ReportToAnalyst" Value="True" />
+            <om:Property Name="Name" Value="orch_FundingSelector" />
+            <om:Property Name="Signal" Value="False" />
+            <om:Element Type="ServiceBody" OID="79dd6c56-381c-4efb-9ecc-d5ece552557d" ParentLink="ServiceDeclaration_ServiceBody">
+                <om:Property Name="Signal" Value="False" />
+                <om:Element Type="Receive" OID="fddbfd6d-61b3-4c59-8249-71f6eb5f5293" ParentLink="ServiceBody_Statement" LowerBound="29.1" HigherBound="31.1">
+                    <om:Property Name="Activate" Value="True" />
+                    <om:Property Name="PortName" Value="Port_FundingAcctReq" />
+                    <om:Property Name="MessageName" Value="msgFundingReq" />
+                    <om:Property Name="OperationName" Value="Operation_1" />
+                    <om:Property Name="OperationMessageName" Value="Request" />
+                    <om:Property Name="ReportToAnalyst" Value="True" />
+                    <om:Property Name="AnalystComments" Value="Receive Funding Request message" />
+                    <om:Property Name="Name" Value="rcvFundingRegMsg" />
+                    <om:Property Name="Signal" Value="True" />
+                    <om:Element Type="DNFPredicate" OID="6ded754d-bfcd-4cb1-8e03-3b7f094c88a2" ParentLink="Receive_DNFPredicate">
+                        <om:Property Name="LHS" Value="BTS.MessageType" />
+                        <om:Property Name="RHS" Value="&quot;http://GetProjectFundingAccount.CityOpsFunding#CityOpsFundingInfoRequest&quot;" />
+                        <om:Property Name="Grouping" Value="AND" />
+                        <om:Property Name="Operator" Value="Equals" />
+                        <om:Property Name="Signal" Value="False" />
+                    </om:Element>
+                </om:Element>
+                <om:Element Type="Construct" OID="d45380d1-c726-40d4-b1b3-b1b75d9cac42" ParentLink="ServiceBody_Statement" LowerBound="31.1" HigherBound="37.1">
+                    <om:Property Name="ReportToAnalyst" Value="True" />
+                    <om:Property Name="AnalystComments" Value="Construct funding acct response msg with map" />
+                    <om:Property Name="Name" Value="constFundingResp" />
+                    <om:Property Name="Signal" Value="True" />
+                    <om:Element Type="Transform" OID="afbd4238-1a6b-42ef-8c35-7e6b1b955ad1" ParentLink="ComplexStatement_Statement" LowerBound="34.1" HigherBound="36.1">
+                        <om:Property Name="ClassName" Value="GetProjectFundingAccount.FundingInfoReqToFundingInfoResp" />
+                        <om:Property Name="ReportToAnalyst" Value="True" />
+                        <om:Property Name="Name" Value="FundingReqToFundingResp" />
+                        <om:Property Name="Signal" Value="True" />
+                        <om:Element Type="MessagePartRef" OID="ff99e851-d74c-4d4c-88fc-fa4a876c1460" ParentLink="Transform_InputMessagePartRef" LowerBound="35.108" HigherBound="35.121">
+                            <om:Property Name="MessageRef" Value="msgFundingReq" />
+                            <om:Property Name="ReportToAnalyst" Value="True" />
+                            <om:Property Name="Name" Value="MessagePartReference_1" />
+                            <om:Property Name="Signal" Value="False" />
+                        </om:Element>
+                        <om:Element Type="MessagePartRef" OID="80605c2b-b5d7-4bbb-be5b-d0ea01bab9e2" ParentLink="Transform_OutputMessagePartRef" LowerBound="35.28" HigherBound="35.46">
+                            <om:Property Name="MessageRef" Value="msgFundingAcctResp" />
+                            <om:Property Name="ReportToAnalyst" Value="True" />
+                            <om:Property Name="Name" Value="MessagePartReference_2" />
+                            <om:Property Name="Signal" Value="False" />
+                        </om:Element>
+                    </om:Element>
+                    <om:Element Type="MessageRef" OID="a56fd458-ec47-4524-9741-439a047450b9" ParentLink="Construct_MessageRef" LowerBound="32.23" HigherBound="32.41">
+                        <om:Property Name="Ref" Value="msgFundingAcctResp" />
+                        <om:Property Name="ReportToAnalyst" Value="True" />
+                        <om:Property Name="Signal" Value="False" />
+                    </om:Element>
+                </om:Element>
+                <om:Element Type="CallRules" OID="ab40b304-b5de-460a-a3d5-54edfae5ebfa" ParentLink="ServiceBody_Statement" LowerBound="37.1" HigherBound="61.1">
+                    <om:Property Name="PolicyName" Value="GetFundingAcctId" />
+                    <om:Property Name="PolicyVersion" Value="-1" />
+                    <om:Property Name="ReportToAnalyst" Value="True" />
+                    <om:Property Name="AnalystComments" Value="Calls Funding Account selector policy" />
+                    <om:Property Name="Name" Value="CallRules_1" />
+                    <om:Property Name="Signal" Value="False" />
+                    <om:Element Type="RulesParameterRef" OID="e526fc42-5b75-4d2b-bfb1-e00d9102b1af" ParentLink="CallRules_RulesParameterRef">
+                        <om:Property Name="Reference" Value="msgFundingAcctResp" />
+                        <om:Property Name="Alias" Value="GetProjectFundingAccount.CityOpsFundingInfoResponse" />
+                        <om:Property Name="ReportToAnalyst" Value="True" />
+                        <om:Property Name="Name" Value="RulesParameterRef_1" />
+                        <om:Property Name="Signal" Value="False" />
+                    </om:Element>
+                </om:Element>
+                <om:Element Type="Send" OID="0268c6e0-bc3f-4308-b357-d2d03231e95d" ParentLink="ServiceBody_Statement" LowerBound="61.1" HigherBound="63.1">
+                    <om:Property Name="PortName" Value="Port_SendFundingAcctResp" />
+                    <om:Property Name="MessageName" Value="msgFundingAcctResp" />
+                    <om:Property Name="OperationName" Value="Operation_1" />
+                    <om:Property Name="OperationMessageName" Value="Request" />
+                    <om:Property Name="ReportToAnalyst" Value="True" />
+                    <om:Property Name="AnalystComments" Value="Send Funding Acct Id Response message" />
+                    <om:Property Name="Name" Value="Send_1" />
+                    <om:Property Name="Signal" Value="True" />
+                </om:Element>
+            </om:Element>
+            <om:Element Type="PortDeclaration" OID="ff8a62e4-3c5b-4375-b320-7804c4838880" ParentLink="ServiceDeclaration_PortDeclaration" LowerBound="21.1" HigherBound="23.1">
+                <om:Property Name="PortModifier" Value="Implements" />
+                <om:Property Name="Orientation" Value="Left" />
+                <om:Property Name="PortIndex" Value="6" />
+                <om:Property Name="IsWebPort" Value="False" />
+                <om:Property Name="OrderedDelivery" Value="False" />
+                <om:Property Name="DeliveryNotification" Value="None" />
+                <om:Property Name="Type" Value="GetProjectFundingAccount.PortType_FundingAcctReq" />
+                <om:Property Name="ParamDirection" Value="In" />
+                <om:Property Name="ReportToAnalyst" Value="True" />
+                <om:Property Name="Name" Value="Port_FundingAcctReq" />
+                <om:Property Name="Signal" Value="False" />
+                <om:Element Type="DirectBindingAttribute" OID="9966e760-02ab-4e32-8557-8b0883c22da9" ParentLink="PortDeclaration_CLRAttribute" LowerBound="21.1" HigherBound="22.1">
+                    <om:Property Name="DirectBindingType" Value="MessageBox" />
+                    <om:Property Name="Signal" Value="False" />
+                </om:Element>
+            </om:Element>
+            <om:Element Type="PortDeclaration" OID="a62c4ec5-6290-4e6f-b628-1f0109c97012" ParentLink="ServiceDeclaration_PortDeclaration" LowerBound="23.1" HigherBound="25.1">
+                <om:Property Name="PortModifier" Value="Uses" />
+                <om:Property Name="Orientation" Value="Right" />
+                <om:Property Name="PortIndex" Value="34" />
+                <om:Property Name="IsWebPort" Value="False" />
+                <om:Property Name="OrderedDelivery" Value="False" />
+                <om:Property Name="DeliveryNotification" Value="None" />
+                <om:Property Name="Type" Value="GetProjectFundingAccount.PortType_SendFundingAcctResp" />
+                <om:Property Name="ParamDirection" Value="In" />
+                <om:Property Name="ReportToAnalyst" Value="True" />
+                <om:Property Name="Name" Value="Port_SendFundingAcctResp" />
+                <om:Property Name="Signal" Value="False" />
+                <om:Element Type="LogicalBindingAttribute" OID="957fdcb9-fa6f-4f56-95bd-262ba4931f94" ParentLink="PortDeclaration_CLRAttribute" LowerBound="23.1" HigherBound="24.1">
+                    <om:Property Name="Signal" Value="False" />
+                </om:Element>
+            </om:Element>
+            <om:Element Type="MessageDeclaration" OID="1df04701-c6c2-469d-b88d-097ea176f985" ParentLink="ServiceDeclaration_MessageDeclaration" LowerBound="25.1" HigherBound="26.1">
+                <om:Property Name="Type" Value="GetProjectFundingAccount.CityOpsFundingInfoRequest" />
+                <om:Property Name="ParamDirection" Value="In" />
+                <om:Property Name="ReportToAnalyst" Value="True" />
+                <om:Property Name="Name" Value="msgFundingReq" />
+                <om:Property Name="Signal" Value="True" />
+            </om:Element>
+            <om:Element Type="MessageDeclaration" OID="87eb14ea-fd58-41b8-b785-3c0e6415b9b1" ParentLink="ServiceDeclaration_MessageDeclaration" LowerBound="26.1" HigherBound="27.1">
+                <om:Property Name="Type" Value="GetProjectFundingAccount.CityOpsFundingInfoResponse" />
+                <om:Property Name="ParamDirection" Value="In" />
+                <om:Property Name="ReportToAnalyst" Value="True" />
+                <om:Property Name="Name" Value="msgFundingAcctResp" />
+                <om:Property Name="Signal" Value="True" />
+            </om:Element>
+        </om:Element>
+    </om:Element>
+</om:MetaModel>
+#endif // __DESIGNER_DATA
+[Microsoft.XLANGs.BaseTypes.BPELExportable(false)]
+module GetProjectFundingAccount
+{
+    internal porttype PortType_FundingAcctReq
+    {
+        oneway Operation_1
+        {
+            CityOpsFundingInfoRequest
+        };
+    };
+    internal porttype PortType_SendFundingAcctResp
+    {
+        oneway Operation_1
+        {
+            CityOpsFundingInfoResponse
+        };
+    };
+    [Microsoft.XLANGs.BaseTypes.BPELExportable(false)]
+    internal service orch_FundingSelector
+    {
+        [Microsoft.XLANGs.BaseTypes.DirectBinding()]
+        port implements PortType_FundingAcctReq Port_FundingAcctReq;
+        [Microsoft.XLANGs.BaseTypes.LogicalBinding()]
+        port uses PortType_SendFundingAcctResp Port_SendFundingAcctResp;
+        message CityOpsFundingInfoRequest msgFundingReq;
+        message CityOpsFundingInfoResponse msgFundingAcctResp;
+        body ()
+        {
+            [Microsoft.XLANGs.BaseTypes.DesignerPosition("fddbfd6d-61b3-4c59-8249-71f6eb5f5293")]
+            activate ((BTS.MessageType == "http://GetProjectFundingAccount.CityOpsFunding#CityOpsFundingInfoRequest"))receive (Port_FundingAcctReq.Operation_1, msgFundingReq);
+            [Microsoft.XLANGs.BaseTypes.DesignerPosition("d45380d1-c726-40d4-b1b3-b1b75d9cac42")]
+            construct msgFundingAcctResp
+            {
+                [Microsoft.XLANGs.BaseTypes.DesignerPosition("afbd4238-1a6b-42ef-8c35-7e6b1b955ad1")]
+                transform (msgFundingAcctResp) = GetProjectFundingAccount.FundingInfoReqToFundingInfoResp (msgFundingReq);
+            }
+
+            [Microsoft.XLANGs.BaseTypes.DesignerPosition("ab40b304-b5de-460a-a3d5-54edfae5ebfa")]
+            scope
+            {
+                Microsoft.RuleEngine.Policy  policy_1__;
+                System.Xml.XmlDocument policyParam_1_2__;
+                Microsoft.RuleEngine.TypedXmlDocument policyParamAsTXD_1_2__;
+
+                body
+                {
+                                        policyParam_1_2__ = msgFundingAcctResp;
+                    policyParamAsTXD_1_2__ = new Microsoft.RuleEngine.TypedXmlDocument("GetProjectFundingAccount.CityOpsFundingInfoResponse", policyParam_1_2__);
+
+                    policy_1__ = new Microsoft.RuleEngine.Policy("GetFundingAcctId");
+                    policy_1__.Execute(
+                        policyParamAsTXD_1_2__);
+                    construct msgFundingAcctResp
+                    {
+                        msgFundingAcctResp = policyParamAsTXD_1_2__.Document;
+                    }
+
+                    policy_1__.Dispose();
+                }
+            }
+            [Microsoft.XLANGs.BaseTypes.DesignerPosition("0268c6e0-bc3f-4308-b357-d2d03231e95d")]
+            send (Port_SendFundingAcctResp.Operation_1, msgFundingAcctResp);
+        }
+    }
+}
+
