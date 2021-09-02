@@ -22,7 +22,7 @@ namespace iPaas_Demo_Functions
         //[return: ServiceBus("fundingallocationqueue", Connection = "ServiceBusConnection")]
         //public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
         public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, 
-        [ServiceBus("validimagequeue", Connection = "ServiceBusConnection")] IAsyncCollector<dynamic> logicAppOutputQueue,
+        [ServiceBus("logappfundingallocationqueue", Connection = "ServiceBusConnection")] IAsyncCollector<dynamic> logicAppOutputQueue,
         [ServiceBus("fundingallocationqueue", Connection = "ServiceBusConnection")] IAsyncCollector<dynamic> bizTalkOutputQueue,
         ILogger log)
         {
