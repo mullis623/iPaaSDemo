@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BindingInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Assembly="Microsoft.BizTalk.Deployment, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" Version="3.5.1.0" BindingStatus="FullyBound" BoundEndpoints="1" TotalEndpoints="1">
+  <Timestamp>2021-08-31T16:07:08.3194388-04:00</Timestamp>
+  <ModuleRefCollection>
+    <ModuleRef Name="[Application:iPaaSDemo-CityOpsFunding]" Version="" Culture="" PublicKeyToken="" FullName="[Application:iPaaSDemo-CityOpsFunding], Version=, Culture=, PublicKeyToken=">
+      <Services />
+      <TrackedSchemas>
+        <Schema FullName="GetProjectFundingAccount.CityOpsFundingInfoRequest" RootName="CityOpsFundingInfoRequest" AssemblyQualifiedName="GetProjectFundingAccount.CityOpsFundingInfoRequest,GetProjectFundingAccount, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a33ad2f61617a56b" AlwaysTrackAllProperties="false">
+          <TrackedPropertyNames />
+        </Schema>
+        <Schema FullName="GetProjectFundingAccount.CityOpsFundingInfoResponse" RootName="CityOpsFundingInfoResponse" AssemblyQualifiedName="GetProjectFundingAccount.CityOpsFundingInfoResponse,GetProjectFundingAccount, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a33ad2f61617a56b" AlwaysTrackAllProperties="false">
+          <TrackedPropertyNames />
+        </Schema>
+      </TrackedSchemas>
+    </ModuleRef>
+    <ModuleRef Name="GetProjectFundingAccount" Version="1.0.0.0" Culture="neutral" PublicKeyToken="a33ad2f61617a56b" FullName="GetProjectFundingAccount, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a33ad2f61617a56b">
+      <Services>
+        <Service Name="GetProjectFundingAccount.orch_FundingSelector" State="Started" TrackingOption="ServiceStartEnd MessageSendReceive InboundMessageBody OutboundMessageBody OrchestrationEvents TrackPropertiesForIncomingMessages TrackPropertiesForOutgoingMessages" AnalyticsEnabled="false">
+          <Ports>
+            <Port Name="Port_SendFundingAcctResp" Modifier="1" BindingOption="1">
+              <SendPortRef Name="sp-FundingAcctResp-SB" />
+              <DistributionListRef xsi:nil="true" />
+              <ReceivePortRef xsi:nil="true" />
+            </Port>
+          </Ports>
+          <Roles />
+          <Host Name="OrchestrationHost" NTGroupName="BizTalk Application Users" Type="1" Trusted="false" />
+        </Service>
+      </Services>
+      <TrackedSchemas />
+    </ModuleRef>
+  </ModuleRefCollection>
+  <SendPortCollection>
+    <SendPort Name="sp-SendFundingAcctRespFromOrch" IsStatic="true" IsTwoWay="false" BindingOption="0" AnalyticsEnabled="false">
+      <Description xsi:nil="true" />
+      <TransmitPipeline Name="GetProjectFundingAccount.sp_FundingInfoRespJSONPipe" FullyQualifiedName="GetProjectFundingAccount.sp_FundingInfoRespJSONPipe, GetProjectFundingAccount, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a33ad2f61617a56b" Type="2" TrackingOption="ServiceStartEnd MessageSendReceive InboundMessageBody OutboundMessageBody PipelineEvents" />
+      <PrimaryTransport>
+        <Address>C:\BTSTesting\CityOpsNotification\OrchDrop\%MessageID%.json</Address>
+        <TransportType Name="FILE" Capabilities="11" ConfigurationClsid="5e49e3a6-b4fc-4077-b44c-22f34a242fdb" />
+        <TransportTypeData>&lt;CustomProps&gt;&lt;UseTempFileOnWrite vt="11"&gt;0&lt;/UseTempFileOnWrite&gt;&lt;AllowCacheOnWrite vt="11"&gt;0&lt;/AllowCacheOnWrite&gt;&lt;CopyMode vt="19"&gt;1&lt;/CopyMode&gt;&lt;FileName vt="8"&gt;%MessageID%.json&lt;/FileName&gt;&lt;/CustomProps&gt;</TransportTypeData>
+        <RetryCount>3</RetryCount>
+        <RetryInterval>5</RetryInterval>
+        <ServiceWindowEnabled>false</ServiceWindowEnabled>
+        <FromTime>2021-06-28T04:00:00</FromTime>
+        <ToTime>2021-06-29T03:59:59</ToTime>
+        <Primary>true</Primary>
+        <OrderedDelivery>false</OrderedDelivery>
+        <DeliveryNotification>1</DeliveryNotification>
+        <SendHandler Name="FileSendHost" HostTrusted="false">
+          <TransportType Name="FILE" Capabilities="11" ConfigurationClsid="5e49e3a6-b4fc-4077-b44c-22f34a242fdb" />
+        </SendHandler>
+      </PrimaryTransport>
+      <SecondaryTransport>
+        <Address />
+        <RetryCount>3</RetryCount>
+        <RetryInterval>5</RetryInterval>
+        <ServiceWindowEnabled>false</ServiceWindowEnabled>
+        <FromTime>2021-06-28T04:00:00</FromTime>
+        <ToTime>2021-06-29T03:59:59</ToTime>
+        <Primary>false</Primary>
+        <OrderedDelivery>false</OrderedDelivery>
+        <DeliveryNotification>1</DeliveryNotification>
+        <SendHandler xsi:nil="true" />
+      </SecondaryTransport>
+      <ReceivePipelineData xsi:nil="true" />
+      <Tracking>0</Tracking>
+      <Filter />
+      <Transforms />
+      <OrderedDelivery>false</OrderedDelivery>
+      <Priority>5</Priority>
+      <StopSendingOnFailure>false</StopSendingOnFailure>
+      <RouteFailedMessage>false</RouteFailedMessage>
+      <ApplicationName>iPaaSDemo-CityOpsFunding</ApplicationName>
+    </SendPort>
+    <SendPort Name="sp-FundingAcctResp-SB" IsStatic="true" IsTwoWay="false" BindingOption="1" AnalyticsEnabled="false">
+      <Description xsi:nil="true" />
+      <TransmitPipeline Name="GetProjectFundingAccount.sp_FundingInfoRespJSONPipe" FullyQualifiedName="GetProjectFundingAccount.sp_FundingInfoRespJSONPipe, GetProjectFundingAccount, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a33ad2f61617a56b" Type="2" TrackingOption="ServiceStartEnd MessageSendReceive InboundMessageBody OutboundMessageBody PipelineEvents" />
+      <PrimaryTransport>
+        <Address>sb://ipaasdemo1.servicebus.windows.net/validimagequeue</Address>
+        <TransportType Name="SB-Messaging" Capabilities="523" ConfigurationClsid="9c458d4a-a73c-4cb3-89c4-86ae0103de2f" />
+        <TransportTypeData>&lt;CustomProps&gt;&lt;DefaultReplyTo vt="8" /&gt;&lt;IssuerSecret vt="1" /&gt;&lt;DefaultReplyToSessionId vt="8" /&gt;&lt;DefaultPartitionKey vt="8" /&gt;&lt;DefaultTimeToLive vt="8"&gt;00:00:00&lt;/DefaultTimeToLive&gt;&lt;StsUri vt="8"&gt;https://&amp;lt;Namespace&amp;gt;-sb.accesscontrol.windows.net/&lt;/StsUri&gt;&lt;SharedAccessKeyName vt="8"&gt;btssendpolicy&lt;/SharedAccessKeyName&gt;&lt;SessionIdleTimeout vt="8"&gt;00:01:00&lt;/SessionIdleTimeout&gt;&lt;DefaultSessionId vt="8" /&gt;&lt;UseAcsAuthentication vt="11"&gt;0&lt;/UseAcsAuthentication&gt;&lt;DefaultCorrelationId vt="8" /&gt;&lt;DefaultContentType vt="8" /&gt;&lt;BatchFlushInterval vt="8"&gt;00:00:00&lt;/BatchFlushInterval&gt;&lt;DefaultLabel vt="8" /&gt;&lt;OpenTimeout vt="8"&gt;00:01:00&lt;/OpenTimeout&gt;&lt;IssuerName vt="8" /&gt;&lt;SharedAccessKey vt="1" /&gt;&lt;DefaultMessageId vt="8" /&gt;&lt;UseSasAuthentication vt="11"&gt;-1&lt;/UseSasAuthentication&gt;&lt;CloseTimeout vt="8"&gt;00:01:00&lt;/CloseTimeout&gt;&lt;SendTimeout vt="8"&gt;00:01:00&lt;/SendTimeout&gt;&lt;MaxReceivedMessageSize vt="3"&gt;262144&lt;/MaxReceivedMessageSize&gt;&lt;CustomBrokeredPropertyNamespace vt="8" /&gt;&lt;/CustomProps&gt;</TransportTypeData>
+        <RetryCount>3</RetryCount>
+        <RetryInterval>5</RetryInterval>
+        <ServiceWindowEnabled>false</ServiceWindowEnabled>
+        <FromTime>2021-06-30T04:00:00</FromTime>
+        <ToTime>2021-07-01T03:59:59</ToTime>
+        <Primary>true</Primary>
+        <OrderedDelivery>false</OrderedDelivery>
+        <DeliveryNotification>1</DeliveryNotification>
+        <SendHandler Name="SBSendHost" HostTrusted="false">
+          <TransportType Name="SB-Messaging" Capabilities="523" ConfigurationClsid="9c458d4a-a73c-4cb3-89c4-86ae0103de2f" />
+        </SendHandler>
+      </PrimaryTransport>
+      <SecondaryTransport>
+        <Address />
+        <RetryCount>3</RetryCount>
+        <RetryInterval>5</RetryInterval>
+        <ServiceWindowEnabled>false</ServiceWindowEnabled>
+        <FromTime>2021-06-30T04:00:00</FromTime>
+        <ToTime>2021-07-01T03:59:59</ToTime>
+        <Primary>false</Primary>
+        <OrderedDelivery>false</OrderedDelivery>
+        <DeliveryNotification>1</DeliveryNotification>
+        <SendHandler xsi:nil="true" />
+      </SecondaryTransport>
+      <ReceivePipelineData xsi:nil="true" />
+      <Tracking>0</Tracking>
+      <Filter />
+      <Transforms />
+      <OrderedDelivery>false</OrderedDelivery>
+      <Priority>5</Priority>
+      <StopSendingOnFailure>false</StopSendingOnFailure>
+      <RouteFailedMessage>false</RouteFailedMessage>
+      <ApplicationName>iPaaSDemo-CityOpsFunding</ApplicationName>
+    </SendPort>
+  </SendPortCollection>
+  <DistributionListCollection />
+  <ReceivePortCollection>
+    <ReceivePort Name="rp-GetCityOpsNotificationJSON" IsTwoWay="false" BindingOption="0" AnalyticsEnabled="false">
+      <Description xsi:nil="true" />
+      <ReceiveLocations>
+        <ReceiveLocation Name="rl-GetCityOpsNotificationJSON">
+          <Description xsi:nil="true" />
+          <Address>C:\BTSTesting\CityOpsNotification\Pickup\*.JSON</Address>
+          <PublicAddress />
+          <Primary>true</Primary>
+          <ReceiveLocationServiceWindowEnabled>false</ReceiveLocationServiceWindowEnabled>
+          <ReceiveLocationFromTime>2021-06-23T00:00:00</ReceiveLocationFromTime>
+          <ReceiveLocationToTime>2021-06-23T23:59:59</ReceiveLocationToTime>
+          <ReceiveLocationStartDateEnabled>false</ReceiveLocationStartDateEnabled>
+          <ReceiveLocationStartDate>2021-06-23T00:00:00</ReceiveLocationStartDate>
+          <ReceiveLocationEndDateEnabled>false</ReceiveLocationEndDateEnabled>
+          <ReceiveLocationEndDate>2021-06-24T23:59:59</ReceiveLocationEndDate>
+          <ReceiveLocationTransportType Name="FILE" Capabilities="11" ConfigurationClsid="5e49e3a6-b4fc-4077-b44c-22f34a242fdb" />
+          <ReceiveLocationTransportTypeData>&lt;CustomProps&gt;&lt;RenameReceivedFiles vt="11"&gt;0&lt;/RenameReceivedFiles&gt;&lt;RemoveReceivedFileDelay vt="19"&gt;10&lt;/RemoveReceivedFileDelay&gt;&lt;RemoveReceivedFileMaxInterval vt="19"&gt;300000&lt;/RemoveReceivedFileMaxInterval&gt;&lt;FileMask vt="8"&gt;*.JSON&lt;/FileMask&gt;&lt;FileNetFailRetryInt vt="19"&gt;5&lt;/FileNetFailRetryInt&gt;&lt;RemoveReceivedFileRetryCount vt="19"&gt;5&lt;/RemoveReceivedFileRetryCount&gt;&lt;BatchSizeInBytes vt="19"&gt;102400&lt;/BatchSizeInBytes&gt;&lt;PollingInterval vt="19"&gt;60000&lt;/PollingInterval&gt;&lt;FileNetFailRetryCount vt="19"&gt;5&lt;/FileNetFailRetryCount&gt;&lt;BatchSize vt="19"&gt;20&lt;/BatchSize&gt;&lt;/CustomProps&gt;</ReceiveLocationTransportTypeData>
+          <ReceivePipeline Name="GetProjectFundingAccount.rp_FundingAccountJSONPipe" FullyQualifiedName="GetProjectFundingAccount.rp_FundingAccountJSONPipe, GetProjectFundingAccount, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a33ad2f61617a56b" Type="1" TrackingOption="ServiceStartEnd MessageSendReceive InboundMessageBody OutboundMessageBody PipelineEvents" />
+          <ReceivePipelineData xsi:nil="true" />
+          <SendPipeline xsi:nil="true" />
+          <SendPipelineData xsi:nil="true" />
+          <Enable>false</Enable>
+          <ReceiveHandler Name="FileReceiveHost" HostTrusted="false">
+            <TransportType Name="FILE" Capabilities="11" ConfigurationClsid="5e49e3a6-b4fc-4077-b44c-22f34a242fdb" />
+          </ReceiveHandler>
+          <ScheduleRecurrenceType>None</ScheduleRecurrenceType>
+          <ScheduleRecurenceFrom>2021-06-23T00:00:00</ScheduleRecurenceFrom>
+          <ScheduleRecurrenceInterval>1</ScheduleRecurrenceInterval>
+          <ScheduleDaysOfWeek>None</ScheduleDaysOfWeek>
+          <ScheduleMonths>None</ScheduleMonths>
+          <ScheduleMonthDays>None</ScheduleMonthDays>
+          <ScheduleOrdinalDayOfWeek>None</ScheduleOrdinalDayOfWeek>
+          <ScheduleOrdinalType>None</ScheduleOrdinalType>
+          <ScheduleIsOrdinal>false</ScheduleIsOrdinal>
+          <ScheduleLastDayOfMonth>false</ScheduleLastDayOfMonth>
+          <ScheduleAutoAdjustToDaylightSaving>true</ScheduleAutoAdjustToDaylightSaving>
+          <ScheduleTimeZone>UTC</ScheduleTimeZone>
+        </ReceiveLocation>
+        <ReceiveLocation Name="rl-GetCityOpsFundingAcctReqSB">
+          <Description xsi:nil="true" />
+          <Address>sb://ipaasdemo1.servicebus.windows.net/fundingallocationqueue</Address>
+          <PublicAddress />
+          <Primary>false</Primary>
+          <ReceiveLocationServiceWindowEnabled>false</ReceiveLocationServiceWindowEnabled>
+          <ReceiveLocationFromTime>2021-06-30T00:00:00</ReceiveLocationFromTime>
+          <ReceiveLocationToTime>2021-06-30T23:59:59</ReceiveLocationToTime>
+          <ReceiveLocationStartDateEnabled>false</ReceiveLocationStartDateEnabled>
+          <ReceiveLocationStartDate>2021-06-30T00:00:00</ReceiveLocationStartDate>
+          <ReceiveLocationEndDateEnabled>false</ReceiveLocationEndDateEnabled>
+          <ReceiveLocationEndDate>2021-07-01T00:00:00</ReceiveLocationEndDate>
+          <ReceiveLocationTransportType Name="SB-Messaging" Capabilities="523" ConfigurationClsid="9c458d4a-a73c-4cb3-89c4-86ae0103de2f" />
+          <ReceiveLocationTransportTypeData>&lt;CustomProps&gt;&lt;IssuerSecret vt="1" /&gt;&lt;IsSessionful vt="11"&gt;0&lt;/IsSessionful&gt;&lt;StsUri vt="8"&gt;https://&amp;lt;Namespace&amp;gt;-sb.accesscontrol.windows.net/&lt;/StsUri&gt;&lt;CloseTimeout vt="8"&gt;00:01:00&lt;/CloseTimeout&gt;&lt;MaxReceivedMessageSize vt="3"&gt;262144&lt;/MaxReceivedMessageSize&gt;&lt;OrderedProcessing vt="11"&gt;0&lt;/OrderedProcessing&gt;&lt;UseAcsAuthentication vt="11"&gt;0&lt;/UseAcsAuthentication&gt;&lt;ReceiveTimeout vt="8"&gt;00:10:00&lt;/ReceiveTimeout&gt;&lt;SharedAccessKey vt="1" /&gt;&lt;OpenTimeout vt="8"&gt;00:01:00&lt;/OpenTimeout&gt;&lt;SharedAccessKeyName vt="8"&gt;btsreadpolicy&lt;/SharedAccessKeyName&gt;&lt;PrefetchCount vt="3"&gt;-1&lt;/PrefetchCount&gt;&lt;IssuerName vt="8" /&gt;&lt;SessionIdleTimeout vt="8"&gt;00:01:00&lt;/SessionIdleTimeout&gt;&lt;UseSasAuthentication vt="11"&gt;-1&lt;/UseSasAuthentication&gt;&lt;PromoteCustomProperties vt="11"&gt;0&lt;/PromoteCustomProperties&gt;&lt;SendTimeout vt="8"&gt;00:00:00&lt;/SendTimeout&gt;&lt;CustomBrokeredPropertyNamespace vt="8"&gt;http://schemas.microsoft.com/BizTalk/2012/ServiceBusAdapter/BrokeredMessage/User&lt;/CustomBrokeredPropertyNamespace&gt;&lt;/CustomProps&gt;</ReceiveLocationTransportTypeData>
+          <ReceivePipeline Name="GetProjectFundingAccount.rp_FundingAccountJSONPipe" FullyQualifiedName="GetProjectFundingAccount.rp_FundingAccountJSONPipe, GetProjectFundingAccount, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a33ad2f61617a56b" Type="1" TrackingOption="ServiceStartEnd MessageSendReceive InboundMessageBody OutboundMessageBody PipelineEvents" />
+          <ReceivePipelineData xsi:nil="true" />
+          <SendPipeline xsi:nil="true" />
+          <SendPipelineData xsi:nil="true" />
+          <Enable>true</Enable>
+          <ReceiveHandler Name="SBReceiveHost" HostTrusted="false">
+            <TransportType Name="SB-Messaging" Capabilities="523" ConfigurationClsid="9c458d4a-a73c-4cb3-89c4-86ae0103de2f" />
+          </ReceiveHandler>
+          <ScheduleRecurrenceType>None</ScheduleRecurrenceType>
+          <ScheduleRecurenceFrom>2021-06-30T00:00:00</ScheduleRecurenceFrom>
+          <ScheduleRecurrenceInterval>1</ScheduleRecurrenceInterval>
+          <ScheduleDaysOfWeek>None</ScheduleDaysOfWeek>
+          <ScheduleMonths>None</ScheduleMonths>
+          <ScheduleMonthDays>None</ScheduleMonthDays>
+          <ScheduleOrdinalDayOfWeek>None</ScheduleOrdinalDayOfWeek>
+          <ScheduleOrdinalType>None</ScheduleOrdinalType>
+          <ScheduleIsOrdinal>false</ScheduleIsOrdinal>
+          <ScheduleLastDayOfMonth>false</ScheduleLastDayOfMonth>
+          <ScheduleAutoAdjustToDaylightSaving>true</ScheduleAutoAdjustToDaylightSaving>
+          <ScheduleTimeZone>UTC</ScheduleTimeZone>
+        </ReceiveLocation>
+      </ReceiveLocations>
+      <SendPipelineData xsi:nil="true" />
+      <Authentication>0</Authentication>
+      <Tracking>0</Tracking>
+      <Transforms />
+      <RouteFailedMessage>false</RouteFailedMessage>
+      <ApplicationName>iPaaSDemo-CityOpsFunding</ApplicationName>
+    </ReceivePort>
+  </ReceivePortCollection>
+  <PartyCollection xsi:nil="true" />
+</BindingInfo>

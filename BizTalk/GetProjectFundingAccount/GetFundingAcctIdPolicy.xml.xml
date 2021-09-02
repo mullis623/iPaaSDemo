@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<brl xmlns="http://schemas.microsoft.com/businessruleslanguage/2002">
+  <ruleset name="GetFundingAcctId">
+    <version major="1" minor="0" description="" modifiedby="BTS2020\btsadmin" date="2021-06-29T09:48:22.3682253-04:00" />
+    <configuration />
+    <bindings>
+      <xmldocument ref="xml_31" doctype="GetProjectFundingAccount.CityOpsFundingInfoResponse" instances="16" selectivity="1" instance="0">
+        <selector>/*[local-name()='CityOpsFundingInfoResponse' and namespace-uri()='http://GetProjectFundingAccount.CityOpsFunding']</selector>
+        <schema>C:\Users\btsadmin\source\repos\GetProjectFundingAccount\CityOpsFundingInfoResponse.xsd</schema>
+      </xmldocument>
+    </bindings>
+    <rule name="GraffitiComplex" priority="0" active="true">
+      <if>
+        <and>
+          <match>
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="949cabdb-16a5-42cf-a80d-e45fec6d0a62" />
+            <pattern>
+              <constant>
+                <string>graffiti</string>
+              </constant>
+            </pattern>
+            <input>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="c8a453dc-047a-4967-99f1-769f332fd4b4" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueType' and namespace-uri()='']</field>
+                  <fieldalias>issueType</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </input>
+          </match>
+          <compare operator="equal">
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="05703dd9-1111-40b8-890d-ad7bfc45a925" />
+            <lhs>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="690fda8a-6d20-43fd-a412-e84a016e43e3" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueComplexity' and namespace-uri()='']</field>
+                  <fieldalias>issueComplexity</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </lhs>
+            <rhs>
+              <constant>
+                <string>complex</string>
+              </constant>
+            </rhs>
+          </compare>
+        </and>
+      </if>
+      <then>
+        <function>
+          <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="23251579-dc48-426a-ac0b-3dc6f3a3980d" />
+          <xmldocumentmember xmldocumentref="xml_31" type="decimal" sideeffects="true">
+            <field>*[local-name()='fundingAccountId' and namespace-uri()='']</field>
+            <fieldalias>fundingAccountId</fieldalias>
+            <argument>
+              <constant>
+                <decimal>200</decimal>
+              </constant>
+            </argument>
+          </xmldocumentmember>
+        </function>
+        <halt>
+          <vocabularylink uri="aee857f2-09d5-4615-a96c-87041791ec42" element="b8d475d6-c1cd-46d1-bd44-5b91f2ac4eee" />
+          <clearagenda>
+            <constant>
+              <vocabularylink uri="5e19cad8-b5f1-4f77-93fd-5210c3e45394" element="b28191b6-5401-4782-a1a4-627df6369743" />
+              <boolean>true</boolean>
+            </constant>
+          </clearagenda>
+        </halt>
+      </then>
+    </rule>
+    <rule name="RoadComplex" priority="0" active="true">
+      <if>
+        <and>
+          <match>
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="949cabdb-16a5-42cf-a80d-e45fec6d0a62" />
+            <pattern>
+              <constant>
+                <string>road</string>
+              </constant>
+            </pattern>
+            <input>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="c8a453dc-047a-4967-99f1-769f332fd4b4" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueType' and namespace-uri()='']</field>
+                  <fieldalias>issueType</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </input>
+          </match>
+          <compare operator="equal">
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="05703dd9-1111-40b8-890d-ad7bfc45a925" />
+            <lhs>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="690fda8a-6d20-43fd-a412-e84a016e43e3" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueComplexity' and namespace-uri()='']</field>
+                  <fieldalias>issueComplexity</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </lhs>
+            <rhs>
+              <constant>
+                <string>complex</string>
+              </constant>
+            </rhs>
+          </compare>
+        </and>
+      </if>
+      <then>
+        <function>
+          <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="23251579-dc48-426a-ac0b-3dc6f3a3980d" />
+          <xmldocumentmember xmldocumentref="xml_31" type="decimal" sideeffects="true">
+            <field>*[local-name()='fundingAccountId' and namespace-uri()='']</field>
+            <fieldalias>fundingAccountId</fieldalias>
+            <argument>
+              <constant>
+                <decimal>100</decimal>
+              </constant>
+            </argument>
+          </xmldocumentmember>
+        </function>
+        <halt>
+          <vocabularylink uri="aee857f2-09d5-4615-a96c-87041791ec42" element="b8d475d6-c1cd-46d1-bd44-5b91f2ac4eee" />
+          <clearagenda>
+            <constant>
+              <vocabularylink uri="5e19cad8-b5f1-4f77-93fd-5210c3e45394" element="b28191b6-5401-4782-a1a4-627df6369743" />
+              <boolean>true</boolean>
+            </constant>
+          </clearagenda>
+        </halt>
+      </then>
+    </rule>
+    <rule name="UtilitiesComplex" priority="0" active="true">
+      <if>
+        <and>
+          <match>
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="949cabdb-16a5-42cf-a80d-e45fec6d0a62" />
+            <pattern>
+              <constant>
+                <string>utilities</string>
+              </constant>
+            </pattern>
+            <input>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="c8a453dc-047a-4967-99f1-769f332fd4b4" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueType' and namespace-uri()='']</field>
+                  <fieldalias>issueType</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </input>
+          </match>
+          <compare operator="equal">
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="05703dd9-1111-40b8-890d-ad7bfc45a925" />
+            <lhs>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="690fda8a-6d20-43fd-a412-e84a016e43e3" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueComplexity' and namespace-uri()='']</field>
+                  <fieldalias>issueComplexity</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </lhs>
+            <rhs>
+              <constant>
+                <string>complex</string>
+              </constant>
+            </rhs>
+          </compare>
+        </and>
+      </if>
+      <then>
+        <function>
+          <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="23251579-dc48-426a-ac0b-3dc6f3a3980d" />
+          <xmldocumentmember xmldocumentref="xml_31" type="decimal" sideeffects="true">
+            <field>*[local-name()='fundingAccountId' and namespace-uri()='']</field>
+            <fieldalias>fundingAccountId</fieldalias>
+            <argument>
+              <constant>
+                <decimal>500</decimal>
+              </constant>
+            </argument>
+          </xmldocumentmember>
+        </function>
+        <halt>
+          <vocabularylink uri="aee857f2-09d5-4615-a96c-87041791ec42" element="b8d475d6-c1cd-46d1-bd44-5b91f2ac4eee" />
+          <clearagenda>
+            <constant>
+              <vocabularylink uri="5e19cad8-b5f1-4f77-93fd-5210c3e45394" element="b28191b6-5401-4782-a1a4-627df6369743" />
+              <boolean>true</boolean>
+            </constant>
+          </clearagenda>
+        </halt>
+      </then>
+    </rule>
+    <rule name="RoadSimple" priority="0" active="true">
+      <if>
+        <and>
+          <match>
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="949cabdb-16a5-42cf-a80d-e45fec6d0a62" />
+            <pattern>
+              <constant>
+                <string>road</string>
+              </constant>
+            </pattern>
+            <input>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="c8a453dc-047a-4967-99f1-769f332fd4b4" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueType' and namespace-uri()='']</field>
+                  <fieldalias>issueType</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </input>
+          </match>
+          <compare operator="equal">
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="05703dd9-1111-40b8-890d-ad7bfc45a925" />
+            <lhs>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="690fda8a-6d20-43fd-a412-e84a016e43e3" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueComplexity' and namespace-uri()='']</field>
+                  <fieldalias>issueComplexity</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </lhs>
+            <rhs>
+              <constant>
+                <string>simple</string>
+              </constant>
+            </rhs>
+          </compare>
+        </and>
+      </if>
+      <then>
+        <function>
+          <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="23251579-dc48-426a-ac0b-3dc6f3a3980d" />
+          <xmldocumentmember xmldocumentref="xml_31" type="decimal" sideeffects="true">
+            <field>*[local-name()='fundingAccountId' and namespace-uri()='']</field>
+            <fieldalias>fundingAccountId</fieldalias>
+            <argument>
+              <constant>
+                <decimal>110</decimal>
+              </constant>
+            </argument>
+          </xmldocumentmember>
+        </function>
+        <halt>
+          <vocabularylink uri="aee857f2-09d5-4615-a96c-87041791ec42" element="b8d475d6-c1cd-46d1-bd44-5b91f2ac4eee" />
+          <clearagenda>
+            <constant>
+              <vocabularylink uri="5e19cad8-b5f1-4f77-93fd-5210c3e45394" element="b28191b6-5401-4782-a1a4-627df6369743" />
+              <boolean>true</boolean>
+            </constant>
+          </clearagenda>
+        </halt>
+      </then>
+    </rule>
+    <rule name="UtilitiesSimple" priority="0" active="true">
+      <if>
+        <and>
+          <match>
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="949cabdb-16a5-42cf-a80d-e45fec6d0a62" />
+            <pattern>
+              <constant>
+                <string>utilities</string>
+              </constant>
+            </pattern>
+            <input>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="c8a453dc-047a-4967-99f1-769f332fd4b4" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueType' and namespace-uri()='']</field>
+                  <fieldalias>issueType</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </input>
+          </match>
+          <compare operator="equal">
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="05703dd9-1111-40b8-890d-ad7bfc45a925" />
+            <lhs>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="690fda8a-6d20-43fd-a412-e84a016e43e3" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueComplexity' and namespace-uri()='']</field>
+                  <fieldalias>issueComplexity</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </lhs>
+            <rhs>
+              <constant>
+                <string>simple</string>
+              </constant>
+            </rhs>
+          </compare>
+        </and>
+      </if>
+      <then>
+        <function>
+          <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="23251579-dc48-426a-ac0b-3dc6f3a3980d" />
+          <xmldocumentmember xmldocumentref="xml_31" type="decimal" sideeffects="true">
+            <field>*[local-name()='fundingAccountId' and namespace-uri()='']</field>
+            <fieldalias>fundingAccountId</fieldalias>
+            <argument>
+              <constant>
+                <decimal>510</decimal>
+              </constant>
+            </argument>
+          </xmldocumentmember>
+        </function>
+        <halt>
+          <vocabularylink uri="aee857f2-09d5-4615-a96c-87041791ec42" element="b8d475d6-c1cd-46d1-bd44-5b91f2ac4eee" />
+          <clearagenda>
+            <constant>
+              <vocabularylink uri="5e19cad8-b5f1-4f77-93fd-5210c3e45394" element="b28191b6-5401-4782-a1a4-627df6369743" />
+              <boolean>true</boolean>
+            </constant>
+          </clearagenda>
+        </halt>
+      </then>
+    </rule>
+    <rule name="GraffitiSimple" priority="0" active="true">
+      <if>
+        <and>
+          <match>
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="949cabdb-16a5-42cf-a80d-e45fec6d0a62" />
+            <pattern>
+              <constant>
+                <string>graffiti</string>
+              </constant>
+            </pattern>
+            <input>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="c8a453dc-047a-4967-99f1-769f332fd4b4" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueType' and namespace-uri()='']</field>
+                  <fieldalias>issueType</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </input>
+          </match>
+          <compare operator="equal">
+            <vocabularylink uri="3f0e9bcc-6212-4e6a-853c-e517f157a626" element="05703dd9-1111-40b8-890d-ad7bfc45a925" />
+            <lhs>
+              <function>
+                <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="690fda8a-6d20-43fd-a412-e84a016e43e3" />
+                <xmldocumentmember xmldocumentref="xml_31" type="string" sideeffects="false">
+                  <field>*[local-name()='issueComplexity' and namespace-uri()='']</field>
+                  <fieldalias>issueComplexity</fieldalias>
+                </xmldocumentmember>
+              </function>
+            </lhs>
+            <rhs>
+              <constant>
+                <string>simple</string>
+              </constant>
+            </rhs>
+          </compare>
+        </and>
+      </if>
+      <then>
+        <function>
+          <vocabularylink uri="4b5e3032-db46-44e9-9c33-425871071780" element="23251579-dc48-426a-ac0b-3dc6f3a3980d" />
+          <xmldocumentmember xmldocumentref="xml_31" type="decimal" sideeffects="true">
+            <field>*[local-name()='fundingAccountId' and namespace-uri()='']</field>
+            <fieldalias>fundingAccountId</fieldalias>
+            <argument>
+              <constant>
+                <decimal>210</decimal>
+              </constant>
+            </argument>
+          </xmldocumentmember>
+        </function>
+        <halt>
+          <vocabularylink uri="aee857f2-09d5-4615-a96c-87041791ec42" element="b8d475d6-c1cd-46d1-bd44-5b91f2ac4eee" />
+          <clearagenda>
+            <constant>
+              <vocabularylink uri="5e19cad8-b5f1-4f77-93fd-5210c3e45394" element="b28191b6-5401-4782-a1a4-627df6369743" />
+              <boolean>true</boolean>
+            </constant>
+          </clearagenda>
+        </halt>
+      </then>
+    </rule>
+  </ruleset>
+</brl>
