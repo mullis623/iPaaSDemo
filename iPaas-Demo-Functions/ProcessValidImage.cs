@@ -105,9 +105,10 @@ namespace iPaas_Demo_Functions
                     imageData.geoLatCoordinate = data.geoLatCoordinate;
                     imageData.geoLongCoordinate = data.geoLongCoordinate;
                     imageData.uploadUserName = data.uploadUserName;
-
-                    imageData.issueComplexity = getIssueComplexity(blobUrl, data.issueType);
-                    imageData.issueUrgency = getIssueUrgency(blobUrl, data.issueType);
+                    
+                    string issueType = data.issueType;
+                    imageData.issueComplexity = getIssueComplexity(blobUrl, issueType);
+                    imageData.issueUrgency = getIssueUrgency(blobUrl, issueType);
 
                     string metaJson = System.Text.Json.JsonSerializer.Serialize<ImageMetadata>(imageData);
                     await metaBlob.UploadTextAsync(metaJson);
