@@ -28,18 +28,18 @@ namespace iPaas_Demo_Functions
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string id = req.Query["id"];
-            string issueType = req.Query["issueType"];
-            string issueDescription = req.Query["issueDescription"];
-            string geoLatCoordinate = req.Query["geoLatCoordinate"];
-            string geoLongCoordinate = req.Query["geoLongCoordinate"];
-            string uploadUserName = req.Query["uploadUserName"];
-            string sendToBizTalk = req.Query["sendToBizTalk"];
+            //string id = req.Query["id"];
+            //string issueType = req.Query["issueType"];
+           //string issueDescription = req.Query["issueDescription"];
+            //string geoLatCoordinate = req.Query["geoLatCoordinate"];
+            //string geoLongCoordinate = req.Query["geoLongCoordinate"];
+            //string uploadUserName = req.Query["uploadUserName"];
+            //string sendToBizTalk = req.Query["sendToBizTalk"];
             
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            id = id ?? data?.id;
-            sendToBizTalk = sendToBizTalk ?? data?.sendToBizTalk;
+            string id = data.id;
+            bool sendToBizTalk = data.sendToBizTalk;
 
             //issueType = issueType ?? data?.issueType;
             //issueDescription = issueDescription ?? data?.issueDescription;
@@ -100,14 +100,14 @@ namespace iPaas_Demo_Functions
                     await imageBlob.DeleteIfExistsAsync();
 
                     imageData.blobUrl = blobUrl;
-                    imageData.issueType = issueType ?? data?.issueType;
-                    imageData.issueDescription = issueDescription ?? data?.issueDescription;
-                    imageData.geoLatCoordinate = geoLatCoordinate ?? data?.geoLatCoordinate;
-                    imageData.geoLongCoordinate = geoLongCoordinate ?? data?.geoLongCoordinate;
-                    imageData.uploadUserName = uploadUserName ?? data?.uploadUserName;
+                    imageData.issueType = data.issueType;
+                    imageData.issueDescription = data.issueDescription;
+                    imageData.geoLatCoordinate = data.geoLatCoordinate;
+                    imageData.geoLongCoordinate = data.geoLongCoordinate;
+                    imageData.uploadUserName = data.uploadUserName;
 
-                    imageData.issueComplexity = getIssueComplexity(blobUrl, issueType);
-                    imageData.issueUrgency = getIssueUrgency(blobUrl, issueType);
+                    imageData.issueComplexity = getIssueComplexity(blobUrl, data.issueType);
+                    imageData.issueUrgency = getIssueUrgency(blobUrl, data.issueType);
 
                     string metaJson = System.Text.Json.JsonSerializer.Serialize<ImageMetadata>(imageData);
                     await metaBlob.UploadTextAsync(metaJson);
@@ -124,7 +124,9 @@ namespace iPaas_Demo_Functions
                 log.LogInformation($"Error! Something went wrong: {ex.Message}");
             }
 
-            if(sendToBizTalk == "true")
+            log.LogInformation($"sendToBizTalk Value: {sendToBizTalk}");
+
+            if(sendToBizTalk == true)
             {
                 log.LogInformation("Sending to BizTalk FundingAllocationQueue");
                 await bizTalkOutputQueue.AddAsync(imageData);
@@ -142,7 +144,7 @@ namespace iPaas_Demo_Functions
 
         public static String getIssueComplexity(String url, String type)
         {
-            string[] issueComplexities = {"simple", "normal", "complex"};
+            string[] issueComplexities = {"simple", "complex"};
             Random random = new Random();
             int randomNum = random.Next(0, issueComplexities.Length);
             string complexity = issueComplexities[randomNum];
