@@ -1,0 +1,90 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "DiskEncryptionDetails": {
+            "value": {
+                "EncryptionOperation": "EnableEncryption",
+                "KeyEncryptionAlgorithm": "RSA-OAEP",
+                "KeyVaultURL": "KeyVaultURL",
+                "KeyVaultResourceId": "KeyVaultResourceId",
+                "VolumeType": "All"
+            }
+        },
+        "VirtualMachines": {
+            "value": [ 
+                {
+                    "name": "windowsvmname",
+                    "adminUsername": "vmadminuser",
+                    "osType": "Windows",
+                    "size": "Standard_D2s_v3",
+                    "sku": "2019-Datacenter",
+                    "publisher": "MicrosoftWindowsServer",
+                    "offer": "WindowsServer",
+                    "osDiskSizeGB": 128,
+                    "osDiskType": "StandardSSD_LRS",
+                    "dataDisks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "sku": "StandardSSD_LRS",
+                            "caching": "ReadOnly",
+                            "writeAcceleratorEnabled": false,              
+                            "diskSizeGB": 128
+                        },
+                        {
+                            "lun": 1,
+                            "createOption": "Empty",
+                            "sku": "StandardSSD_LRS",
+                            "caching": "ReadOnly",
+                            "writeAcceleratorEnabled": false,                            
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "certs": {
+                        "Name": "certname",
+                        "KV_RGName": "KVResourceGroupName",
+                        "KV_Name": "KVName"                    
+                    }
+                },
+                {
+                    "name": "linuxvmname",
+                    "adminUsername": "vmadminuser",
+                    "osType": "Linux",
+                    "size": "Standard_D2s_v3",
+                    "sku": "8-gen2",
+                    "publisher": "RedHat",
+                    "offer": "RHEL",
+                    "osDiskSizeGB": 128,
+                    "osDiskType": "StandardSSD_LRS",
+                    "dataDisks": [
+                        {
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "sku": "StandardSSD_LRS",
+                            "caching": "ReadOnly",
+                            "writeAcceleratorEnabled": false,                            
+                            "diskSizeGB": 128
+                        }
+                    ],
+                    "certs": {}           
+                }
+            ]
+        },
+        "VM_VnetDetails": {
+            "value": {
+                "vnetName": "VNetName",
+                "subnetName": "subnetName",
+                "RGName": "VNetResourceGroupName"
+            }
+        },
+        "adminPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "KVResourceID"
+                },
+                "secretName": "AdminPasswordSecretName"
+            }
+        }
+    }
+}
