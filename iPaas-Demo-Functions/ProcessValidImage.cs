@@ -39,7 +39,8 @@ namespace iPaas_Demo_Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             string id = data.id;
-            bool sendToBizTalk = data.sendToBizTalk;
+            //bool sendToBizTalk = data.sendToBizTalk;
+            bool sendToBizTalk = false;
 
             //issueType = issueType ?? data?.issueType;
             //issueDescription = issueDescription ?? data?.issueDescription;
